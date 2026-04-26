@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>測你對他來說重不重要｜米塔塔羅</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --pink: #f7a8c8;
+    --pink-light: #fde8f4;
+    --pink-mid: #f0c0d8;
+    --purple: #c8a8e8;
+    --purple-light: #f0e8ff;
+    --purple-mid: #d8c0f0;
+    --blue: #a8cce8;
+    --blue-light: #e0f0ff;
+    --blue-mid: #c0d8f0;
+    --text-dark: #5a3060;
+    --text-mid: #8a5080;
+    --text-soft: #b088a8;
+    --white: #fffcff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: #fdf5fc;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, #fce8f5 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 85% 15%, #e8e0ff 0%, transparent 55%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, #e0f0ff 0%, transparent 50%),
+      radial-gradient(ellipse 70% 40% at 90% 85%, #fce0f0 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ======= QUIZ PAGE ======= */
+  #quiz {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  .brand-top {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    margin-bottom: 28px;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .quiz-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.75);
+    border: 1px solid var(--pink-mid);
+    color: var(--text-mid);
+    font-size: 12px;
+    padding: 5px 16px;
+    border-radius: 30px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(8px);
+  }
+
+  .quiz-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .quiz-sub {
+    font-size: 14px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-bottom: 44px;
+    letter-spacing: 0.05em;
+  }
+
+  .planets-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 36px;
+    width: 100%;
+  }
+
+  .planet-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    flex: 1;
+    max-width: 110px;
+  }
+  .planet-item:hover { transform: translateY(-6px) scale(1.04); }
+  .planet-item:active { transform: scale(0.96); }
+
+  .planet-svg-wrap {
+    width: 95px;
+    height: 95px;
+    filter: drop-shadow(0 6px 16px rgba(160,100,160,0.18));
+    transition: filter 0.2s;
+  }
+  .planet-item:hover .planet-svg-wrap {
+    filter: drop-shadow(0 10px 24px rgba(160,100,160,0.30));
+  }
+
+  .planet-label-bubble {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    font-family: 'Noto Serif TC', serif;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+  .lb-a { background: linear-gradient(135deg, #c8a0e0, #a880c8); }
+  .lb-b { background: linear-gradient(135deg, #80b8e0, #5898cc); }
+  .lb-c { background: linear-gradient(135deg, #f090b8, #d86898); }
+
+  .quiz-hint {
+    font-size: 13px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .brand-bottom {
+    font-size: 12px;
+    color: #c8a0b8;
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+
+  /* ======= RESULT PAGES ======= */
+  .result-page {
+    display: none;
+    animation: fadeUp 0.5s ease;
+    padding: 0 16px 60px;
+  }
+  .result-page.show { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-hero {
+    border-radius: 0 0 32px 32px;
+    padding: 50px 24px 32px;
+    text-align: center;
+    margin: 0 -16px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.3;
+    background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.8), transparent 60%);
+  }
+
+  .res-planet-wrap {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15));
+  }
+
+  .res-tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+
+  .res-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .content-card {
+    background: rgba(255,255,255,0.85);
+    border: 1px solid rgba(220,180,220,0.3);
+    border-radius: 20px;
+    padding: 20px 20px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(8px);
+  }
+  .content-card p {
+    font-size: 15px;
+    color: #6a4870;
+    line-height: 1.9;
+    margin-bottom: 10px;
+  }
+  .content-card p:last-child { margin-bottom: 0; }
+
+  .magic-card {
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+  }
+  .magic-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .magic-label::before { content: '✦'; font-size: 10px; }
+  .magic-text { font-size: 14px; line-height: 1.8; }
+
+  .reviews-section { margin-bottom: 20px; }
+  .reviews-heading {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-soft);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .reviews-heading::before, .reviews-heading::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0b8d0, transparent);
+  }
+
+  .review-item {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(220,180,220,0.25);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(6px);
+  }
+  .review-stars { font-size: 12px; color: #e8b020; margin-bottom: 7px; letter-spacing: 2px; }
+  .review-body { font-size: 14px; color: #7a5070; line-height: 1.75; }
+  .review-hl {
+    background: linear-gradient(90deg, #ffe0f0, #f0d8ff);
+    padding: 1px 5px;
+    border-radius: 4px;
+    color: #903068;
+    font-weight: 500;
+  }
+
+  .booking-card {
+    border-radius: 24px;
+    padding: 26px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .booking-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.4), transparent 60%);
+  }
+  .booking-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .booking-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .booking-sub {
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .booking-btn {
+    display: inline-block;
+    padding: 13px 36px;
+    border-radius: 40px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #fff;
+    letter-spacing: 0.06em;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: 'Noto Serif TC', serif;
+  }
+  .booking-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .booking-btn:active { transform: scale(0.97); }
+
+  .line-info {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .back-btn {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-soft);
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--text-dark); }
+
+  /* ======= PLANET SVGs ======= */
+  .sparkle {
+    animation: twinkle 2s ease-in-out infinite;
+  }
+  .sparkle:nth-child(2) { animation-delay: 0.7s; }
+  .sparkle:nth-child(3) { animation-delay: 1.4s; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ======= QUIZ ======= -->
+  <div id="quiz">
+    <div class="brand-top">Mita_tarot_｜米塔塔羅</div>
+    <div class="quiz-badge">🌙 大眾占卜</div>
+    <h1 class="quiz-title">測你對他來說<br>重不重要</h1>
+    <p class="quiz-sub">請憑直覺選出一個最有感應的選項</p>
+
+    <div class="planets-row">
+      <!-- Planet A: blue-green -->
+      <div class="planet-item" onclick="showResult('A')">
+        <div class="planet-svg-wrap">
+          <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="ga" cx="38%" cy="32%" r="65%">
+                <stop offset="0%" stop-color="#d8f0f8"/>
+                <stop offset="45%" stop-color="#90c8e0"/>
+                <stop offset="100%" stop-color="#5898b8"/>
+              </radialGradient>
+              <radialGradient id="ga2" cx="70%" cy="65%" r="50%">
+                <stop offset="0%" stop-color="#70b0cc" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#408898" stop-opacity="0"/>
+              </radialGradient>
+              <clipPath id="ca"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+            </defs>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#ga)"/>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#ga2)"/>
+            <ellipse cx="36" cy="44" rx="20" ry="5" fill="#a8d8e8" opacity="0.35" clip-path="url(#ca)"/>
+            <ellipse cx="55" cy="52" rx="18" ry="4" fill="#88b8cc" opacity="0.25" clip-path="url(#ca)"/>
+            <ellipse cx="42" cy="38" rx="14" ry="3" fill="#c8e8f0" opacity="0.4" clip-path="url(#ca)"/>
+            <!-- Ring -->
+            <ellipse cx="47.5" cy="52" rx="38" ry="11" fill="none" stroke="#b8906a" stroke-width="3.5" transform="rotate(-22 47.5 52)" opacity="0.8"/>
+            <ellipse cx="47.5" cy="50" rx="37" ry="10" fill="none" stroke="#d8b080" stroke-width="1.5" transform="rotate(-22 47.5 50)" opacity="0.5"/>
+            <!-- Highlight -->
+            <ellipse cx="38" cy="36" rx="10" ry="7" fill="white" opacity="0.22"/>
+            <!-- Sparkles -->
+            <g class="sparkle"><circle cx="82" cy="18" r="2" fill="#f0d0e8"/></g>
+            <g class="sparkle"><circle cx="14" cy="28" r="1.5" fill="#d0e8f8"/></g>
+            <g class="sparkle"><circle cx="75" cy="72" r="1.5" fill="#e8d0f8"/></g>
+          </svg>
+        </div>
+        <div class="planet-label-bubble lb-a">A</div>
+      </div>
+
+      <!-- Planet B: yellow -->
+      <div class="planet-item" onclick="showResult('B')">
+        <div class="planet-svg-wrap">
+          <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="gb" cx="40%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#fff8c0"/>
+                <stop offset="40%" stop-color="#f0d870"/>
+                <stop offset="100%" stop-color="#d0a840"/>
+              </radialGradient>
+              <radialGradient id="gb2" cx="65%" cy="70%" r="45%">
+                <stop offset="0%" stop-color="#c89030" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#c89030" stop-opacity="0"/>
+              </radialGradient>
+              <clipPath id="cb"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+            </defs>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gb)"/>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gb2)"/>
+            <ellipse cx="35" cy="42" rx="22" ry="3.5" fill="#e8c860" opacity="0.4" clip-path="url(#cb)"/>
+            <ellipse cx="52" cy="50" rx="20" ry="3" fill="#c8a030" opacity="0.25" clip-path="url(#cb)"/>
+            <ellipse cx="40" cy="35" rx="16" ry="2.5" fill="#fff0a0" opacity="0.45" clip-path="url(#cb)"/>
+            <ellipse cx="48" cy="56" rx="18" ry="2.5" fill="#d8a820" opacity="0.3" clip-path="url(#cb)"/>
+            <!-- Ring -->
+            <ellipse cx="47.5" cy="52" rx="40" ry="10" fill="none" stroke="#a07820" stroke-width="3.5" transform="rotate(-18 47.5 52)" opacity="0.75"/>
+            <ellipse cx="47.5" cy="50" rx="39" ry="9" fill="none" stroke="#c8a040" stroke-width="1.5" transform="rotate(-18 47.5 50)" opacity="0.5"/>
+            <!-- Highlight -->
+            <ellipse cx="38" cy="35" rx="11" ry="7" fill="white" opacity="0.25"/>
+            <g class="sparkle"><circle cx="80" cy="20" r="2" fill="#f8e8a0"/></g>
+            <g class="sparkle"><circle cx="16" cy="22" r="1.5" fill="#f0e890"/></g>
+            <g class="sparkle"><circle cx="78" cy="68" r="2" fill="#f8d060"/></g>
+          </svg>
+        </div>
+        <div class="planet-label-bubble lb-b">B</div>
+      </div>
+
+      <!-- Planet C: pink-beige -->
+      <div class="planet-item" onclick="showResult('C')">
+        <div class="planet-svg-wrap">
+          <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="gc" cx="38%" cy="30%" r="65%">
+                <stop offset="0%" stop-color="#f8e8e0"/>
+                <stop offset="45%" stop-color="#e0b8a8"/>
+                <stop offset="100%" stop-color="#c09080"/>
+              </radialGradient>
+              <radialGradient id="gc2" cx="68%" cy="68%" r="50%">
+                <stop offset="0%" stop-color="#a06858" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#a06858" stop-opacity="0"/>
+              </radialGradient>
+              <clipPath id="cc"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+            </defs>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gc)"/>
+            <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gc2)"/>
+            <ellipse cx="34" cy="43" rx="20" ry="4" fill="#d4a090" opacity="0.35" clip-path="url(#cc)"/>
+            <ellipse cx="54" cy="50" rx="18" ry="3.5" fill="#b88070" opacity="0.28" clip-path="url(#cc)"/>
+            <ellipse cx="42" cy="36" rx="14" ry="2.5" fill="#f0d8c8" opacity="0.45" clip-path="url(#cc)"/>
+            <ellipse cx="50" cy="57" rx="16" ry="3" fill="#c08878" opacity="0.3" clip-path="url(#cc)"/>
+            <!-- Ring -->
+            <ellipse cx="47.5" cy="52" rx="39" ry="10.5" fill="none" stroke="#906050" stroke-width="3.5" transform="rotate(-20 47.5 52)" opacity="0.78"/>
+            <ellipse cx="47.5" cy="49" rx="38" ry="9.5" fill="none" stroke="#b88060" stroke-width="1.5" transform="rotate(-20 47.5 49)" opacity="0.45"/>
+            <!-- Highlight -->
+            <ellipse cx="38" cy="36" rx="10" ry="6.5" fill="white" opacity="0.22"/>
+            <g class="sparkle"><circle cx="82" cy="16" r="2" fill="#f0d0e0"/></g>
+            <g class="sparkle"><circle cx="12" cy="30" r="1.5" fill="#f8e0d0"/></g>
+            <g class="sparkle"><circle cx="76" cy="74" r="2" fill="#e8c8d8"/></g>
+          </svg>
+        </div>
+        <div class="planet-label-bubble lb-c">C</div>
+      </div>
+    </div>
+
+    <p class="quiz-hint">點選星球查看你的占卜結果</p>
+    <p class="brand-bottom">Mita_tarot_｜米塔塔羅</p>
+  </div>
+
+  <!-- ======= RESULT A ======= -->
+  <div id="resultA" class="result-page">
+    <div class="result-hero" style="background:linear-gradient(160deg,#cce8f8,#ddd0f8,#f0e8ff);">
+      <div class="res-planet-wrap">
+        <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="ga3" cx="38%" cy="32%" r="65%">
+              <stop offset="0%" stop-color="#d8f0f8"/>
+              <stop offset="45%" stop-color="#90c8e0"/>
+              <stop offset="100%" stop-color="#5898b8"/>
+            </radialGradient>
+            <clipPath id="ca3"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+          </defs>
+          <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#ga3)"/>
+          <ellipse cx="36" cy="44" rx="20" ry="5" fill="#a8d8e8" opacity="0.35" clip-path="url(#ca3)"/>
+          <ellipse cx="42" cy="38" rx="14" ry="3" fill="#c8e8f0" opacity="0.4" clip-path="url(#ca3)"/>
+          <ellipse cx="47.5" cy="52" rx="38" ry="11" fill="none" stroke="#b8906a" stroke-width="3.5" transform="rotate(-22 47.5 52)" opacity="0.8"/>
+          <ellipse cx="47.5" cy="50" rx="37" ry="10" fill="none" stroke="#d8b080" stroke-width="1.5" transform="rotate(-22 47.5 50)" opacity="0.5"/>
+          <ellipse cx="38" cy="36" rx="10" ry="7" fill="white" opacity="0.22"/>
+        </svg>
+      </div>
+      <div class="res-tag" style="background:rgba(255,255,255,0.6);color:#2266a8;">✦ A 選項</div>
+      <div class="res-title" style="color:#1a4a88;">有期待、有火花，<br>但還在拉扯中的重要存在</div>
+    </div>
+
+    <div class="content-card">
+      <p>他其實有把你放在一個特別的位置，也覺得這段關係是有機會發展的。但同時，他內在還在掙扎，或外在有一些干擾，讓關係不夠穩。</p>
+      <p>你會感覺到他有靠近、有熱情，但就是不穩定。</p>
+      <p>不是不重要，是「在意但還沒定下來」。</p>
+    </div>
+
+    <div class="magic-card" style="background:linear-gradient(135deg,#e8f4ff,#ece8ff);border-color:#b0ccee;">
+      <div class="magic-label" style="color:#2060a8;">建議搭配魔法能量</div>
+      <div class="magic-text" style="color:#2a5898;"><strong>澄光＋心動</strong><br>穩定關係流動，同時放大吸引力與互動感，讓曖昧更有機會往前推進。</div>
+    </div>
+
+    <div class="reviews-section">
+      <div class="reviews-heading">占卜好評見證</div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">謝謝老師給我的建議，<span class="review-hl">確實與我現在的心境相符</span>！我一直覺得自己能力不夠所以朋友提議的時候，我一直覺的很猶豫！很準確！謝謝老師</div>
+      </div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">老師真的很溫暖也很仔細，<span class="review-hl">真的都打中我內心那些無法說出口的想法</span>，也都對應到我跟對方的狀況 😭</div>
+      </div>
+    </div>
+
+    <div class="booking-card" style="background:linear-gradient(150deg,#ddeeff,#e8e0ff,#f0e8ff);">
+      <span class="booking-icon">🔮</span>
+      <div class="booking-title" style="color:#1a4888;">想知道更多關係細節？</div>
+      <div class="booking-sub" style="color:#3060a8;">迷惘時，讓塔羅替你連結宇宙的訊息<br>找回你心中的答案 🩵</div>
+      <a class="booking-btn" style="background:linear-gradient(135deg,#5588cc,#7760cc);" href="https://lin.ee/skAYHmu" target="_blank">✦ 預約個人占卜</a>
+      <div class="line-info">官方 LINE → lin.ee/skAYHmu</div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">← 重新選擇</button>
+  </div>
+
+  <!-- ======= RESULT B ======= -->
+  <div id="resultB" class="result-page">
+    <div class="result-hero" style="background:linear-gradient(160deg,#f8f0d8,#e8f5f0,#d8f0f8);">
+      <div class="res-planet-wrap">
+        <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="gb3" cx="40%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#fff8c0"/>
+              <stop offset="40%" stop-color="#f0d870"/>
+              <stop offset="100%" stop-color="#d0a840"/>
+            </radialGradient>
+            <clipPath id="cb3"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+          </defs>
+          <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gb3)"/>
+          <ellipse cx="35" cy="42" rx="22" ry="3.5" fill="#e8c860" opacity="0.4" clip-path="url(#cb3)"/>
+          <ellipse cx="40" cy="35" rx="16" ry="2.5" fill="#fff0a0" opacity="0.45" clip-path="url(#cb3)"/>
+          <ellipse cx="47.5" cy="52" rx="40" ry="10" fill="none" stroke="#a07820" stroke-width="3.5" transform="rotate(-18 47.5 52)" opacity="0.75"/>
+          <ellipse cx="47.5" cy="50" rx="39" ry="9" fill="none" stroke="#c8a040" stroke-width="1.5" transform="rotate(-18 47.5 50)" opacity="0.5"/>
+          <ellipse cx="38" cy="35" rx="11" ry="7" fill="white" opacity="0.25"/>
+        </svg>
+      </div>
+      <div class="res-tag" style="background:rgba(255,255,255,0.6);color:#1a7058;">✦ B 選項</div>
+      <div class="res-title" style="color:#145040;">在觀察，但還沒真正<br>放進心裡核心的人</div>
+    </div>
+
+    <div class="content-card">
+      <p>他不是沒感覺，但偏理性、試探，也有點防備。他會關注你，但不太表現。</p>
+      <p>目前關係不穩，可能沒有明確定位，或彼此節奏不同。</p>
+      <p>但節制代表這段關係是可以慢慢調整、變好的。</p>
+    </div>
+
+    <div class="magic-card" style="background:linear-gradient(135deg,#e8fff8,#eefff5);border-color:#88d8b0;">
+      <div class="magic-label" style="color:#1a8060;">建議搭配魔法能量</div>
+      <div class="magic-text" style="color:#186050;"><strong>澄光＋錢錢到</strong><br>先把自己的狀態、生活與能量穩住，當你越穩、越有自己的節奏，關係反而更容易往好的方向走。</div>
+    </div>
+
+    <div class="reviews-section">
+      <div class="reviews-heading">占卜好評見證</div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">我來給你回饋了 💗 <span class="review-hl">全部都有對應到目前的狀況</span>，目前也會把重心放在自己身上調整心態 💗</div>
+      </div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">謝謝 mita，<span class="review-hl">真的是都說中我的心聲</span> 😭 塔羅占卜是一個指引，也是一面映照現況的鏡子。</div>
+      </div>
+    </div>
+
+    <div class="booking-card" style="background:linear-gradient(150deg,#e0fff8,#e8fff0,#f0ffe8);">
+      <span class="booking-icon">🔮</span>
+      <div class="booking-title" style="color:#146040;">想知道更多關係細節？</div>
+      <div class="booking-sub" style="color:#288060;">迷惘時，讓塔羅替你連結宇宙的訊息<br>找回你心中的答案 🩵</div>
+      <a class="booking-btn" style="background:linear-gradient(135deg,#38a878,#2888a0);" href="https://lin.ee/skAYHmu" target="_blank">✦ 預約個人占卜</a>
+      <div class="line-info">官方 LINE → lin.ee/skAYHmu</div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">← 重新選擇</button>
+  </div>
+
+  <!-- ======= RESULT C ======= -->
+  <div id="resultC" class="result-page">
+    <div class="result-hero" style="background:linear-gradient(160deg,#fce8f5,#f5e0ff,#ffe0f0);">
+      <div class="res-planet-wrap">
+        <svg viewBox="0 0 95 95" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="gc3" cx="38%" cy="30%" r="65%">
+              <stop offset="0%" stop-color="#f8e8e0"/>
+              <stop offset="45%" stop-color="#e0b8a8"/>
+              <stop offset="100%" stop-color="#c09080"/>
+            </radialGradient>
+            <clipPath id="cc3"><ellipse cx="47.5" cy="47.5" rx="28" ry="28"/></clipPath>
+          </defs>
+          <ellipse cx="47.5" cy="47.5" rx="28" ry="28" fill="url(#gc3)"/>
+          <ellipse cx="34" cy="43" rx="20" ry="4" fill="#d4a090" opacity="0.35" clip-path="url(#cc3)"/>
+          <ellipse cx="42" cy="36" rx="14" ry="2.5" fill="#f0d8c8" opacity="0.45" clip-path="url(#cc3)"/>
+          <ellipse cx="47.5" cy="52" rx="39" ry="10.5" fill="none" stroke="#906050" stroke-width="3.5" transform="rotate(-20 47.5 52)" opacity="0.78"/>
+          <ellipse cx="47.5" cy="49" rx="38" ry="9.5" fill="none" stroke="#b88060" stroke-width="1.5" transform="rotate(-20 47.5 49)" opacity="0.45"/>
+          <ellipse cx="38" cy="36" rx="10" ry="6.5" fill="white" opacity="0.22"/>
+        </svg>
+      </div>
+      <div class="res-tag" style="background:rgba(255,255,255,0.6);color:#902060;">✦ C 選項</div>
+      <div class="res-title" style="color:#7a1050;">很重要，但同時帶著<br>壓力與情緒的人</div>
+    </div>
+
+    <div class="content-card">
+      <p>這組很明顯，他不是不在意，是「太在意」。但中間可能有過傷害、誤會或隱瞞，讓他現在變得比較壓抑與理性。</p>
+      <p>他會想掌控局面，也在壓住自己的感受。</p>
+      <p>你在他心裡的份量是重的，只是這份重要，現在帶著防備。</p>
+    </div>
+
+    <div class="magic-card" style="background:linear-gradient(135deg,#fff0f8,#f8e8ff);border-color:#e0a8c8;">
+      <div class="magic-label" style="color:#a03070;">建議搭配魔法能量</div>
+      <div class="magic-text" style="color:#882060;"><strong>澄光＋初心</strong><br>釋放關係中的壓力，同時回到最初的感受，讓彼此有機會重新看見對方。</div>
+    </div>
+
+    <div class="reviews-section">
+      <div class="reviews-heading">占卜好評見證</div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">謝謝老師！<span class="review-hl">真的好準</span>，以前每次我想努力和他溝通解決的時候他總是用很多的理由去逃避。謝謝你～謝謝老師。</div>
+      </div>
+      <div class="review-item">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-body">跟老師聊完<span class="review-hl">我真的覺得有被真正理解和接住的感覺</span>！每字每句真的都打中我內心那些無法說出口的想法。你值得被好好對待 ❤️</div>
+      </div>
+    </div>
+
+    <div class="booking-card" style="background:linear-gradient(150deg,#ffe8f8,#f8e0ff,#f0e8ff);">
+      <span class="booking-icon">🔮</span>
+      <div class="booking-title" style="color:#882060;">想知道更多關係細節？</div>
+      <div class="booking-sub" style="color:#aa4080;">迷惘時，讓塔羅替你連結宇宙的訊息<br>找回你心中的答案 🩵</div>
+      <a class="booking-btn" style="background:linear-gradient(135deg,#cc5590,#a848c8);" href="https://lin.ee/skAYHmu" target="_blank">✦ 預約個人占卜</a>
+      <div class="line-info">官方 LINE → lin.ee/skAYHmu</div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">← 重新選擇</button>
+  </div>
+
+</div>
+
+<script>
+function showResult(opt) {
+  document.getElementById('quiz').style.display = 'none';
+  ['A','B','C'].forEach(function(o) {
+    var el = document.getElementById('result' + o);
+    if (o === opt) {
+      el.classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      el.classList.remove('show');
+    }
+  });
+}
+function goBack() {
+  ['A','B','C'].forEach(function(o) {
+    document.getElementById('result' + o).classList.remove('show');
+  });
+  document.getElementById('quiz').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
