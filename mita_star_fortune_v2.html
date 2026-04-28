@@ -1,0 +1,187 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.fw {
+  padding: 1.3rem 1rem 1.3rem;
+  text-align: center;
+  font-family: var(--font-sans);
+  background: linear-gradient(150deg, #e8eeff 0%, #ecdeff 30%, #f5e0f7 60%, #fce4f0 100%);
+  border-radius: 20px;
+}
+.ftitle { font-size: 15px; font-weight: 500; color: #3a3a9a; margin-bottom: 3px; letter-spacing: 0.06em; }
+.fsub { font-size: 12px; color: #8060b8; margin-bottom: 0.9rem; }
+.deco { display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:0.9rem; }
+.deco hr { width:22px; border:none; border-top:1px solid #b8b0e0; }
+.deco-s { font-size:10px; color:#9080d0; }
+.cards-row { display:flex; justify-content:center; gap:14px; margin-bottom:0.9rem; }
+.card-wrap { position:relative; width:94px; height:148px; perspective:700px; cursor:pointer; flex-shrink:0; }
+.card-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.65s cubic-bezier(.4,.2,.2,1); }
+.card-wrap:hover:not(.done) .card-inner { transform: translateY(-7px) scale(1.04); }
+.card-wrap.flipped .card-inner { transform: rotateY(180deg); }
+.card-wrap.faded { opacity:0.2; pointer-events:none; transition:opacity 0.4s; }
+.cf, .cb { position:absolute; width:100%; height:100%; border-radius:18px; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.cb { background: linear-gradient(145deg, #1e1a4a 0%, #2d2060 50%, #3a1a5a 100%); border: 1.5px solid #6050a8; }
+.cb-inner { width:84%; height:86%; border-radius:13px; border: 1px solid rgba(160,140,255,0.3); background: rgba(60,40,120,0.2); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+.cb-lbl { font-size:12px; font-weight:500; color:rgba(200,180,255,0.65); letter-spacing:0.08em; margin-top:3px; }
+.cf { transform: rotateY(180deg); background: linear-gradient(145deg, #dde8ff 0%, #ede0ff 60%, #fce0f5 100%); border: 1.5px solid #a8b8f0; }
+.cf-inner { width:84%; height:86%; border-radius:13px; border: 1px solid #c0b0f0; background: linear-gradient(135deg, #f0eeff 0%, #fdf0ff 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
+.cf-letter { font-size:26px; font-weight:500; color:#3a3a9a; line-height:1; }
+.cf-sub { font-size:10px; color:#7060b8; }
+.hint { font-size:12px; color:#5050a0; margin-bottom:0.5rem; }
+.reselect-btn { display:none; margin:0 auto 0.65rem; background:rgba(255,255,255,0.55); border:1.5px solid #b0a8e8; color:#5050a0; font-size:12px; padding:5px 16px; border-radius:20px; cursor:pointer; }
+.reselect-btn:hover { background:rgba(180,170,255,0.25); }
+.reselect-btn.visible { display:inline-block; }
+.result-box { display:none; background:linear-gradient(145deg,#f0ecff 0%,#e8f0ff 50%,#fce8f8 100%); border:1.5px solid #b8b0f0; border-radius:18px; padding:1rem 1.1rem 0.9rem; max-width:460px; margin:0 auto; text-align:left; animation:fadeUp 0.45s ease; }
+.result-box.show { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.res-tag { font-size:11px; font-weight:500; color:#7050a8; letter-spacing:0.06em; margin-bottom:5px; }
+.res-title { font-size:14px; font-weight:500; color:#2a2880; margin-bottom:9px; line-height:1.5; }
+.res-body { font-size:13px; color:#3a3a8a; line-height:1.8; margin-bottom:9px; }
+.res-body p { margin-bottom:6px; }
+.res-tip { background:rgba(255,255,255,0.75); border:1.5px solid #c0b8f5; border-radius:12px; padding:8px 12px; font-size:13px; font-weight:500; color:#2a2880; margin-bottom:9px; line-height:1.6; }
+.res-cta { font-size:12px; color:#6050a0; line-height:1.75; border-top:1px solid #c8c0f0; padding-top:9px; margin-bottom:9px; }
+.btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.res-link { display:inline-block; background:linear-gradient(120deg,#4040a0,#a040c0); color:#fff; font-size:13px; font-weight:500; padding:8px 20px; border-radius:22px; text-decoration:none; }
+.reset-btn { display:inline-block; background:transparent; border:1.5px solid #b8b0f0; color:#5050a0; font-size:12px; padding:6px 14px; border-radius:22px; cursor:pointer; }
+.reset-btn:hover { background:rgba(180,170,255,0.2); }
+</style>
+
+<div class="fw">
+  <div class="ftitle">✦ 明日運勢占卜 ✦</div>
+  <div class="fsub">用直覺，選一張最有感應的牌</div>
+  <div class="deco"><hr><div class="deco-s">✦</div><hr></div>
+
+  <div class="cards-row">
+    <div class="card-wrap" id="cA" onclick="pick('A')">
+      <div class="card-inner">
+        <div class="cb"><div class="cb-inner"><canvas id="cvA" width="72" height="64"></canvas><div class="cb-lbl">A</div></div></div>
+        <div class="cf"><div class="cf-inner"><canvas id="fcvA" width="32" height="32"></canvas><div class="cf-letter">A</div><div class="cf-sub">已翻開</div></div></div>
+      </div>
+    </div>
+    <div class="card-wrap" id="cB" onclick="pick('B')">
+      <div class="card-inner">
+        <div class="cb"><div class="cb-inner"><canvas id="cvB" width="72" height="64"></canvas><div class="cb-lbl">B</div></div></div>
+        <div class="cf"><div class="cf-inner"><canvas id="fcvB" width="32" height="32"></canvas><div class="cf-letter">B</div><div class="cf-sub">已翻開</div></div></div>
+      </div>
+    </div>
+    <div class="card-wrap" id="cC" onclick="pick('C')">
+      <div class="card-inner">
+        <div class="cb"><div class="cb-inner"><canvas id="cvC" width="72" height="64"></canvas><div class="cb-lbl">C</div></div></div>
+        <div class="cf"><div class="cf-inner"><canvas id="fcvC" width="32" height="32"></canvas><div class="cf-letter">C</div><div class="cf-sub">已翻開</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint" id="hintText">閉上眼睛，感受哪張牌在呼喚你 ✨</div>
+  <button class="reselect-btn" id="reselectBtn" onclick="reselect()">↩ 重新選擇</button>
+  <div class="result-box" id="resultBox"></div>
+</div>
+
+<script>
+function drawStar(ctx, cx, cy, r, points, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  for (let i = 0; i < points * 2; i++) {
+    const angle = (i * Math.PI) / points - Math.PI / 2;
+    const radius = i % 2 === 0 ? r : r * 0.42;
+    const x = cx + radius * Math.cos(angle);
+    const y = cy + radius * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawDot(ctx, cx, cy, r, color, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBackCanvas(id) {
+  const cv = document.getElementById(id);
+  const ctx = cv.getContext('2d');
+  const w = cv.width, h = cv.height;
+  // big center star
+  drawStar(ctx, w/2, h/2-2, 18, 5, '#c8c0ff', 0.92);
+  drawStar(ctx, w/2, h/2-2, 18, 4, '#ffffff', 0.18);
+  // smaller stars
+  drawStar(ctx, 12, 12, 6, 5, '#a090f8', 0.75);
+  drawStar(ctx, w-12, h-12, 5, 5, '#d0a8ff', 0.72);
+  drawStar(ctx, 10, h-10, 4, 5, '#b0c8ff', 0.65);
+  drawStar(ctx, w-10, 12, 4, 5, '#ffc8f0', 0.65);
+  drawStar(ctx, w/2-16, h-8, 3.5, 5, '#c0d0ff', 0.55);
+  // dots
+  const dots = [[6,h/2,1.5,'#ffffff',0.55],[w-6,h/2-4,1.5,'#e0d0ff',0.5],[w/2+10,6,1.5,'#c8e8ff',0.5],[w/2-10,h-4,1.5,'#ffffff',0.45],[w-14,h/2+8,1.2,'#ffd0f0',0.45],[14,h/2-12,1.2,'#d0e0ff',0.45]];
+  dots.forEach(d => drawDot(ctx, ...d));
+}
+
+function drawFrontCanvas(id) {
+  const cv = document.getElementById(id);
+  const ctx = cv.getContext('2d');
+  drawStar(ctx, 16, 16, 11, 5, '#9898e8', 0.72);
+  drawStar(ctx, 16, 16, 11, 4, '#ffffff', 0.15);
+}
+
+['A','B','C'].forEach(k => {
+  drawBackCanvas('cv'+k);
+  drawFrontCanvas('fcv'+k);
+});
+
+const R = {
+  A:{title:"人際順流，付出與接受要對等",body:"明天的你在人際互動上會有一種「剛剛好的平衡」。\n\n可能是有人願意幫你，或事情在資源分配上變得比較順。但這張牌也提醒你，付出與接受要對等，不要一味給，也不要過度依賴。\n\n整體是穩定、人際順流的一天。",tip:"接受別人的好意，也是一種勇氣。"},
+  B:{title:"清醒理智，看清自己也看清關係",body:"明天的你會特別理性、清楚。你很知道自己在想什麼，也看得懂別人的狀態。\n\n適合做決定、劃清界線、看清關係。但要注意，表達可能偏直接，容易讓人覺得有距離或偏冷。\n\n整體是清醒、理智的一天。",tip:"清楚不等於冷漠，表達時加一點溫度會更好。"},
+  C:{title:"適合起步，一步一步穩穩來",body:"明天的你會有「想開始、想學點什麼」的感覺。可能是一個新的想法、一個小計畫，或重新對某件事產生興趣。\n\n這張牌不強調速度，而是一步一步穩穩來。只要願意開始，後面其實會慢慢累積起來。\n\n整體是適合起步、培養的一天。",tip:"不用一次做完，今天只要跨出第一步就夠了。"}
+};
+
+let done = false;
+
+function pick(k) {
+  if (done) return;
+  done = true;
+  document.getElementById('c'+k).classList.add('flipped');
+  ['A','B','C'].forEach(x => {
+    document.getElementById('c'+x).classList.add('done');
+    if (x !== k) document.getElementById('c'+x).classList.add('faded');
+  });
+  document.getElementById('hintText').textContent = '牌面揭曉 ✨';
+  document.getElementById('reselectBtn').classList.add('visible');
+  setTimeout(() => showResult(k), 700);
+}
+
+function showResult(k) {
+  const r = R[k];
+  const paras = r.body.split('\n\n').map(p => '<p>'+p+'</p>').join('');
+  const box = document.getElementById('resultBox');
+  box.innerHTML =
+    '<div class="res-tag">✦ 你選了 '+k+' 牌</div>' +
+    '<div class="res-title">'+r.title+'</div>' +
+    '<div class="res-body">'+paras+'</div>' +
+    '<div class="res-tip">✦ Mita 小建議：'+r.tip+'</div>' +
+    '<div class="res-cta">如果你最近剛好有點卡住，或是對某件事有點拿不定主意，我也可以幫你一起看得更清楚 ✨</div>' +
+    '<div class="btn-row"><a class="res-link" href="https://lin.ee/PeZzU7e" target="_blank">預約官方 LINE</a><button class="reset-btn" onclick="resetAll()">再抽一次</button></div>';
+  box.classList.add('show');
+}
+
+function reselect() {
+  done = false;
+  ['A','B','C'].forEach(k => {
+    const c = document.getElementById('c'+k);
+    c.classList.remove('flipped','faded','done');
+  });
+  document.getElementById('reselectBtn').classList.remove('visible');
+  const rb = document.getElementById('resultBox');
+  rb.classList.remove('show');
+  rb.innerHTML = '';
+  document.getElementById('hintText').textContent = '閉上眼睛，感受哪張牌在呼喚你 ✨';
+}
+
+function resetAll() { reselect(); }
+</script>
