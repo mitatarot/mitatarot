@@ -1,0 +1,203 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap {
+  font-family: var(--font-sans);
+  background: linear-gradient(160deg, #dde6ff 0%, #ede0ff 28%, #f7e0f8 55%, #fce8f2 78%, #e8eeff 100%);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+}
+.stars-bg { position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.hero { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:1.4rem 1rem 0.8rem; }
+.brand-name { font-size:17px; font-weight:500; color:#3a2d8a; letter-spacing:0.04em; margin-bottom:2px; }
+.brand-sub { font-size:11px; color:#9070c0; margin-bottom:1rem; }
+.divider { display:flex; align-items:center; gap:8px; margin-bottom:0.9rem; }
+.divider hr { width:28px; border:none; border-top:1px solid rgba(160,130,220,0.4); }
+.divider span { font-size:11px; color:#9070c0; }
+.prompt-txt { font-size:13px; color:#5548a0; margin-bottom:1rem; }
+.cards-row { display:flex; justify-content:center; gap:14px; margin-bottom:0.85rem; position:relative; z-index:1; }
+.card-wrap { width:96px; height:152px; perspective:800px; cursor:pointer; flex-shrink:0; }
+.card-inner { width:100%; height:100%; transform-style:preserve-3d; transition:transform 0.7s cubic-bezier(.4,.2,.2,1); }
+.card-wrap:hover:not(.done) .card-inner { transform:translateY(-8px) scale(1.04); }
+.card-wrap.flipped .card-inner { transform:rotateY(180deg); }
+.card-wrap.faded { opacity:0.18; pointer-events:none; transition:opacity 0.45s; }
+.cface { position:absolute; width:100%; height:100%; border-radius:20px; backface-visibility:hidden; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+.cback { background:linear-gradient(150deg,#1a1640 0%,#28196a 45%,#3a1860 100%); border:1.5px solid rgba(160,130,255,0.5); box-shadow:0 6px 20px rgba(60,30,120,0.3); }
+.cback-inner { width:83%; height:85%; border-radius:14px; border:1px solid rgba(180,155,255,0.3); background:rgba(80,50,160,0.18); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+.cback-lbl { font-size:11px; color:rgba(210,190,255,0.6); letter-spacing:0.1em; margin-top:3px; }
+.cfront { transform:rotateY(180deg); background:linear-gradient(145deg,#dde8ff 0%,#eedfff 55%,#fce4f5 100%); border:1.5px solid rgba(160,140,240,0.6); }
+.cfront-inner { width:83%; height:85%; border-radius:14px; border:1px solid rgba(180,150,255,0.5); background:linear-gradient(135deg,#f2eeff 0%,#fef0ff 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; }
+.cfront-letter { font-size:24px; font-weight:500; color:#3a2d8a; line-height:1; }
+.cfront-sub { font-size:10px; color:#8060c0; }
+.hint-row { font-size:12px; color:#5548a0; margin-bottom:0.5rem; position:relative; z-index:1; }
+.reselect-btn { display:none; margin:0 auto 0.65rem; background:rgba(255,255,255,0.5); border:1.5px solid rgba(160,130,220,0.5); color:#5548a0; font-size:12px; padding:5px 18px; border-radius:20px; cursor:pointer; transition:background 0.18s; position:relative; z-index:1; }
+.reselect-btn:hover { background:rgba(200,180,255,0.3); }
+.reselect-btn.show { display:inline-block; }
+.result-area { display:none; margin:0 0.8rem 0.8rem; background:linear-gradient(145deg,#f2eeff 0%,#eaf0ff 50%,#fceeff 100%); border:1.5px solid rgba(160,140,240,0.45); border-radius:18px; padding:1rem 1.1rem 0.9rem; text-align:left; animation:fadeUp 0.5s ease; position:relative; z-index:1; }
+.result-area.show { display:block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.res-badge { display:inline-block; font-size:11px; font-weight:500; color:#6040a8; background:rgba(180,150,255,0.2); border:1px solid rgba(160,130,220,0.35); border-radius:10px; padding:2px 10px; letter-spacing:0.05em; margin-bottom:7px; }
+.res-card-name { font-size:12px; color:#9060c0; margin-bottom:5px; font-weight:500; }
+.res-title { font-size:14px; font-weight:500; color:#2a2280; margin-bottom:9px; line-height:1.5; }
+.res-body { font-size:13px; color:#3a3888; line-height:1.82; margin-bottom:9px; }
+.res-body p { margin-bottom:6px; }
+.res-tip { background:rgba(255,255,255,0.7); border:1.5px solid rgba(180,155,255,0.45); border-radius:12px; padding:8px 12px; font-size:13px; font-weight:500; color:#2a2280; margin-bottom:9px; line-height:1.6; }
+.res-cta { font-size:12px; color:#6050a0; line-height:1.75; border-top:1px solid rgba(180,160,240,0.35); padding-top:9px; margin-bottom:9px; }
+.btn-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.line-btn { display:inline-block; background:linear-gradient(120deg,#4838a8,#a030c0); color:#fff; font-size:13px; font-weight:500; padding:8px 20px; border-radius:22px; text-decoration:none; }
+.again-btn { background:rgba(255,255,255,0.6); border:1.5px solid rgba(160,140,240,0.5); color:#5548a0; font-size:12px; padding:7px 14px; border-radius:22px; cursor:pointer; }
+.again-btn:hover { background:rgba(200,180,255,0.25); }
+</style>
+
+<div class="wrap">
+  <svg class="stars-bg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMid slice" fill="none">
+    <circle cx="30" cy="60" r="1.5" fill="#a090e0" opacity="0.4"/>
+    <circle cx="370" cy="40" r="1.2" fill="#c0a8f0" opacity="0.35"/>
+    <circle cx="50" cy="180" r="1" fill="#b0c8ff" opacity="0.3"/>
+    <circle cx="360" cy="150" r="1.5" fill="#e0b8f8" opacity="0.35"/>
+    <circle cx="90" cy="320" r="1.2" fill="#a8b8f8" opacity="0.3"/>
+    <circle cx="340" cy="280" r="1" fill="#d0b0f8" opacity="0.3"/>
+    <circle cx="20" cy="420" r="1.5" fill="#b8c8ff" opacity="0.25"/>
+    <circle cx="385" cy="380" r="1.2" fill="#c8b0f0" opacity="0.25"/>
+    <circle cx="60" cy="520" r="1" fill="#a0c0f8" opacity="0.2"/>
+    <circle cx="350" cy="480" r="1.5" fill="#e0c0ff" opacity="0.25"/>
+    <polygon points="200,20 201.5,25 206,25 202.5,27.8 203.8,33 200,30 196.2,33 197.5,27.8 194,25 198.5,25" fill="#b8a8f0" opacity="0.3"/>
+    <polygon points="320,120 321,124 325,124 321.8,126 323,130 320,128 317,130 318.2,126 315,124 319,124" fill="#d0b8ff" opacity="0.28"/>
+    <polygon points="80,240 81,244 85,244 81.8,246 83,250 80,248 77,250 78.2,246 75,244 79,244" fill="#a8c0ff" opacity="0.25"/>
+    <polygon points="350,360 351,363.5 354.5,363.5 351.8,365.5 352.8,369 350,367 347.2,369 348.2,365.5 345.5,363.5 349,363.5" fill="#c8a8f8" opacity="0.25"/>
+  </svg>
+
+  <div class="hero">
+    <div class="brand-name">Mita Tarot · 米塔塔羅</div>
+    <div class="brand-sub">明日運勢占卜</div>
+    <div class="divider"><hr><span>✦</span><hr></div>
+    <div class="prompt-txt">閉上眼睛，感受哪張牌在呼喚你</div>
+  </div>
+
+  <div class="cards-row">
+    <div class="card-wrap" id="cA" onclick="pick('A')">
+      <div class="card-inner">
+        <div class="cface cback"><div class="cback-inner"><canvas id="cvA" width="68" height="60"></canvas><div class="cback-lbl">A</div></div></div>
+        <div class="cface cfront"><div class="cfront-inner"><canvas id="fcvA" width="30" height="30"></canvas><div class="cfront-letter">A</div><div class="cfront-sub">已翻開</div></div></div>
+      </div>
+    </div>
+    <div class="card-wrap" id="cB" onclick="pick('B')">
+      <div class="card-inner">
+        <div class="cface cback"><div class="cback-inner"><canvas id="cvB" width="68" height="60"></canvas><div class="cback-lbl">B</div></div></div>
+        <div class="cface cfront"><div class="cfront-inner"><canvas id="fcvB" width="30" height="30"></canvas><div class="cfront-letter">B</div><div class="cfront-sub">已翻開</div></div></div>
+      </div>
+    </div>
+    <div class="card-wrap" id="cC" onclick="pick('C')">
+      <div class="card-inner">
+        <div class="cface cback"><div class="cback-inner"><canvas id="cvC" width="68" height="60"></canvas><div class="cback-lbl">C</div></div></div>
+        <div class="cface cfront"><div class="cfront-inner"><canvas id="fcvC" width="30" height="30"></canvas><div class="cfront-letter">C</div><div class="cfront-sub">已翻開</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; position:relative; z-index:1;">
+    <div class="hint-row" id="hintTxt">輕觸一張牌，揭開明日的訊息 ✨</div>
+    <button class="reselect-btn" id="reselBtn" onclick="doResel()">↩ 重新選擇</button>
+  </div>
+
+  <div class="result-area" id="resultArea"></div>
+</div>
+
+<script>
+function shell(ctx, cx, cy, size, col, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 0.9;
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy + size*0.1, size*0.55, size*0.7, 0, 0, Math.PI*2);
+  ctx.globalAlpha = alpha * 0.18;
+  ctx.fill();
+  ctx.globalAlpha = alpha * 0.7;
+  ctx.stroke();
+  const ribs = 7;
+  for (let i = 0; i < ribs; i++) {
+    const t = (i / (ribs - 1)) * Math.PI - Math.PI/2;
+    const ex = cx + Math.cos(t) * size * 0.55;
+    const ey = cy + size*0.1 + Math.sin(t) * size * 0.7;
+    ctx.globalAlpha = alpha * 0.4;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - size * 0.5);
+    ctx.quadraticCurveTo(cx + Math.cos(t)*size*0.3, cy + Math.sin(t)*size*0.2, ex, ey);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = alpha * 0.9;
+  ctx.fillStyle = col;
+  ctx.beginPath();
+  ctx.arc(cx, cy - size * 0.5, size * 0.1, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+function dot(ctx, cx, cy, r, col, alpha) {
+  ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = col;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill(); ctx.restore();
+}
+function drawBack(id) {
+  const cv = document.getElementById(id);
+  const ctx = cv.getContext('2d');
+  const w = cv.width, h = cv.height;
+  shell(ctx, w/2, h/2+2, 20, '#c8b8ff', 0.95);
+  shell(ctx, 10, 10, 8, '#a0b8ff', 0.65);
+  shell(ctx, w-10, h-10, 7, '#e0b8ff', 0.6);
+  shell(ctx, w-8, 12, 6, '#ffc8f0', 0.55);
+  shell(ctx, 8, h-10, 6, '#b8d0ff', 0.5);
+  dot(ctx, w/2+14, 8, 1.5, '#ffffff', 0.6);
+  dot(ctx, 4, h/2, 1.5, '#d8c8ff', 0.5);
+  dot(ctx, w-4, h/2-4, 1.2, '#b8d8ff', 0.45);
+  dot(ctx, w/2-16, h-4, 1.2, '#ffd8f8', 0.45);
+}
+function drawFront(id) {
+  const cv = document.getElementById(id);
+  const ctx = cv.getContext('2d');
+  shell(ctx, 15, 15, 11, '#9888e8', 0.8);
+}
+['A','B','C'].forEach(k => { drawBack('cv'+k); drawFront('fcv'+k); });
+
+const DATA = {
+  A: { card:'聖杯 3', title:'社交順流，分享讓事情更順', body:'明天很適合社交與互動的一天。可能會有朋友邀約、聊天變多，或是心情變得比較輕鬆愉快。\n\n這張牌也代表「連結感」，有些事情透過交流反而更順，不一定要自己撐著，適度分享會有幫助。', tip:'可以試著見朋友、聊天、放鬆一下 🌸' },
+  B: { card:'金星能量', title:'滋養自己，放鬆就是吸引力', body:'明天的能量偏向「滋養與享受」。你會比較在意自己的感受，也適合讓自己過得舒服一點。\n\n不論是打扮、吃點好吃的，或是做讓自己開心的事，都會讓整體狀態變更好。當你放鬆、自然，就會更容易吸引到好的回應。', tip:'可以多照顧自己、放慢步調 ✨' },
+  C: { card:'五角星 / 錢幣', title:'穩穩累積，慢才是真的快', body:'明天是穩定務實的一天。事情不一定很快有結果，但你正在慢慢累積。\n\n適合按部就班把該做的事情做好，雖然節奏偏慢，但其實是在往正確方向前進。', tip:'不要急，穩穩來反而更有成果 🌙' }
+};
+
+let done = false;
+function pick(k) {
+  if (done) return; done = true;
+  document.getElementById('c'+k).classList.add('flipped');
+  ['A','B','C'].forEach(x => {
+    document.getElementById('c'+x).classList.add('done');
+    if (x !== k) document.getElementById('c'+x).classList.add('faded');
+  });
+  document.getElementById('hintTxt').textContent = '牌面揭曉 ✨';
+  document.getElementById('reselBtn').classList.add('show');
+  setTimeout(() => showResult(k), 720);
+}
+function showResult(k) {
+  const d = DATA[k];
+  const paras = d.body.split('\n\n').map(p => '<p>'+p+'</p>').join('');
+  const el = document.getElementById('resultArea');
+  el.innerHTML =
+    '<div class="res-badge">你選了 '+k+' 牌</div>'+
+    '<div class="res-card-name">✦ '+d.card+'</div>'+
+    '<div class="res-title">'+d.title+'</div>'+
+    '<div class="res-body">'+paras+'</div>'+
+    '<div class="res-tip">Mita 小建議：'+d.tip+'</div>'+
+    '<div class="res-cta">如果你最近有點卡住，或是想更清楚某段關係、某個選擇，可以找 Mita 聊聊 🐰</div>'+
+    '<div class="btn-row"><a class="line-btn" href="https://lin.ee/7A6HCQo" target="_blank">找 Mita 聊聊</a><button class="again-btn" onclick="doResel()">再抽一次</button></div>';
+  el.classList.add('show');
+}
+function doResel() {
+  done = false;
+  ['A','B','C'].forEach(k => { const c=document.getElementById('c'+k); c.classList.remove('flipped','faded','done'); });
+  document.getElementById('reselBtn').classList.remove('show');
+  const ra = document.getElementById('resultArea');
+  ra.classList.remove('show'); ra.innerHTML = '';
+  document.getElementById('hintTxt').textContent = '輕觸一張牌，揭開明日的訊息 ✨';
+}
+</script>
