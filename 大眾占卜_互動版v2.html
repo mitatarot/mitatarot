@@ -1,0 +1,462 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+.page { width: 100%; background: transparent; font-family: 'Noto Sans TC', sans-serif; }
+
+.header {
+  background: linear-gradient(160deg, #f9c5d8 0%, #f0a8cc 50%, #e0a0d8 100%);
+  padding: 28px 20px 24px;
+  text-align: center;
+  border-radius: 20px 20px 0 0;
+}
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.85);
+  color: #c06090;
+  font-size: 13px;
+  padding: 4px 16px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+.header-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #9b3060;
+  line-height: 1.4;
+  letter-spacing: 1px;
+}
+
+.pick-section {
+  background: linear-gradient(180deg, #fdf0f5 0%, #f5e8f8 100%);
+  padding: 24px 12px 28px;
+}
+.pick-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #b07090;
+  margin-bottom: 20px;
+}
+
+.cards-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.tarot-card {
+  flex: 1;
+  max-width: 115px;
+  min-height: 180px;
+  border-radius: 18px;
+  padding: 22px 8px 18px;
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+}
+.tarot-card:hover {
+  transform: translateY(-6px) scale(1.04);
+}
+.tarot-card.card-a {
+  background: linear-gradient(160deg, #ffe4ef, #ffc8de, #f9a8c9);
+  box-shadow: 0 4px 18px rgba(210,100,140,0.18);
+}
+.tarot-card.card-b {
+  background: linear-gradient(160deg, #eedcf8, #ddbcf4, #cc9ee8);
+  box-shadow: 0 4px 18px rgba(150,80,200,0.18);
+}
+.tarot-card.card-c {
+  background: linear-gradient(160deg, #dde8fd, #bccdf8, #9db4f2);
+  box-shadow: 0 4px 18px rgba(80,110,200,0.18);
+}
+
+/* Shimmer overlay */
+.tarot-card::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 60%;
+  height: 200%;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.45) 50%, transparent 60%);
+  transform: skewX(-15deg);
+  transition: left 0.6s;
+  pointer-events: none;
+}
+.tarot-card:hover::before { left: 160%; }
+
+.card-moon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(200,120,180,0.4));
+}
+.card-b .card-moon { filter: drop-shadow(0 2px 6px rgba(140,80,200,0.4)); }
+.card-c .card-moon { filter: drop-shadow(0 2px 6px rgba(80,100,200,0.4)); }
+
+.card-sparkles {
+  font-size: 11px;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+  opacity: 0.7;
+  display: block;
+}
+.card-a .card-sparkles { color: #d06090; }
+.card-b .card-sparkles { color: #8840b8; }
+.card-c .card-sparkles { color: #4060b8; }
+
+.card-label-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.card-a .card-label-circle { background: linear-gradient(135deg, #e0609a, #c04070); }
+.card-b .card-label-circle { background: linear-gradient(135deg, #a060d0, #7030a0); }
+.card-c .card-label-circle { background: linear-gradient(135deg, #5070d0, #3050a0); }
+
+.card-text {
+  font-size: 11px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+.card-a .card-text { color: #c04070; }
+.card-b .card-text { color: #7030a0; }
+.card-c .card-text { color: #3050a0; }
+
+/* Floating stars animation */
+@keyframes floatStar {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-40px) scale(1.2); }
+}
+.star-particle {
+  position: absolute;
+  pointer-events: none;
+  animation: floatStar 1.2s ease-out forwards;
+  font-size: 14px;
+}
+
+/* Result */
+.result-panel {
+  display: none;
+  background: white;
+  padding: 24px 18px 20px;
+  animation: slideUp 0.45s cubic-bezier(.22,1,.36,1);
+}
+.result-panel.show { display: block; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.top-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.action-btn:active { transform: scale(0.96); }
+.back-btn-styled {
+  background: linear-gradient(135deg, #fce8f2, #f5d0e8);
+  color: #c06090;
+}
+.retry-btn-styled {
+  background: linear-gradient(135deg, #f0e8fc, #e0d0f8);
+  color: #9055bb;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.result-badge-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+.badge-a { background: linear-gradient(135deg, #e0609a, #c04070); }
+.badge-b { background: linear-gradient(135deg, #a060d0, #7030a0); }
+.badge-c { background: linear-gradient(135deg, #5070d0, #3050a0); }
+
+.result-title { font-size: 16px; font-weight: 700; color: #333; }
+.result-subtitle { font-size: 12px; color: #aaa; margin-top: 2px; }
+
+.result-divider {
+  height: 2px;
+  border-radius: 2px;
+  margin: 0 0 16px;
+}
+.divider-a { background: linear-gradient(90deg, #f0c0d8, #fce8f2); }
+.divider-b { background: linear-gradient(90deg, #d0a0f0, #f0e0fc); }
+.divider-c { background: linear-gradient(90deg, #a0b8f0, #e0e8fc); }
+
+.result-body { font-size: 14px; color: #444; line-height: 1.85; margin-bottom: 16px; }
+
+.magic-box {
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+.magic-box-a { background: #fdf0f5; border-left: 3px solid #d06090; }
+.magic-box-b { background: #f5eefb; border-left: 3px solid #9055bb; }
+.magic-box-c { background: #eef2fb; border-left: 3px solid #4a6fb5; }
+
+.magic-label { font-size: 11px; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
+.magic-label-a { color: #d06090; }
+.magic-label-b { color: #9055bb; }
+.magic-label-c { color: #4a6fb5; }
+.magic-text { font-size: 13px; color: #555; line-height: 1.65; }
+
+/* CTA */
+.cta-section {
+  background: linear-gradient(160deg, #fdf0f8, #f5ebfc);
+  padding: 20px 16px;
+  text-align: center;
+  border-top: 1px solid #f0d8ec;
+}
+.cta-text { font-size: 13px; color: #666; line-height: 1.75; margin-bottom: 16px; }
+.cta-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #d06090, #9055bb);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 32px;
+  border-radius: 30px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(160,60,160,0.28);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(160,60,160,0.38); }
+
+/* Reviews */
+.reviews-section {
+  background: linear-gradient(160deg, #fdf0f8 0%, #f5ebfc 100%);
+  padding: 24px 16px 28px;
+  border-radius: 0 0 20px 20px;
+}
+.reviews-title { text-align: center; font-size: 14px; font-weight: 700; color: #9b3060; margin-bottom: 4px; }
+.reviews-stars { text-align: center; font-size: 17px; margin-bottom: 16px; color: #f5a623; }
+.review-card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border: 0.5px solid #f0d0e8;
+}
+.review-quote { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 8px; }
+.review-tag {
+  display: inline-block;
+  background: #fce8f2;
+  color: #c06090;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+.brand-tag { margin-top: 14px; font-size: 11px; color: #ccc; text-align: center; }
+</style>
+
+<div class="page">
+
+  <div class="header">
+    <div class="header-badge">大眾占卜</div>
+    <div class="header-title">測他是否還會偷偷關注我</div>
+  </div>
+
+  <div class="pick-section" id="pick-section">
+    <div class="pick-hint">請憑直覺選出一個最有感應的選項</div>
+    <div class="cards-row">
+      <button class="tarot-card card-a" onclick="showResult('a', this)" id="btn-a">
+        <span class="card-moon">🌙</span>
+        <span class="card-sparkles">✦ ✦ ✦</span>
+        <div class="card-label-circle">A</div>
+        <div class="card-text">粉玫瑰</div>
+      </button>
+      <button class="tarot-card card-b" onclick="showResult('b', this)" id="btn-b">
+        <span class="card-moon">✨</span>
+        <span class="card-sparkles">✧ ✧ ✧</span>
+        <div class="card-label-circle">B</div>
+        <div class="card-text">薰衣草</div>
+      </button>
+      <button class="tarot-card card-c" onclick="showResult('c', this)" id="btn-c">
+        <span class="card-moon">⭐</span>
+        <span class="card-sparkles">✦ ✦ ✦</span>
+        <div class="card-label-circle">C</div>
+        <div class="card-text">星河藍</div>
+      </button>
+    </div>
+  </div>
+
+  <div class="result-panel" id="result-a">
+    <div class="top-actions">
+      <button class="action-btn back-btn-styled" onclick="goBack()">← 重新選擇</button>
+    </div>
+    <div class="result-header">
+      <div class="result-badge-circle badge-a">A</div>
+      <div>
+        <div class="result-title">有情感連結，帶著遺憾的關注</div>
+        <div class="result-subtitle">他有在看，但沒有前進</div>
+      </div>
+    </div>
+    <div class="result-divider divider-a"></div>
+    <div class="result-body">
+      抽到 A 的你，代表他對你還有情感連結，也會去關注你的動態，但這種關注是帶著遺憾與壓抑的。他容易因為過去的情緒而停住，不敢行動，形成一種「有在看，但不前進」的狀態。
+    </div>
+    <div class="magic-box magic-box-a">
+      <div class="magic-label magic-label-a">✦ 建議魔法商品</div>
+      <div class="magic-text">澄光＋初心，清理這段關係的情緒殘留，同時把你的重心拉回自己。</div>
+    </div>
+  </div>
+
+  <div class="result-panel" id="result-b">
+    <div class="top-actions">
+      <button class="action-btn back-btn-styled" onclick="goBack()">← 重新選擇</button>
+    </div>
+    <div class="result-header">
+      <div class="result-badge-circle badge-b">B</div>
+      <div>
+        <div class="result-title">偶爾想起，收斂抽離的狀態</div>
+        <div class="result-subtitle">頻率不高，帶著懷念</div>
+      </div>
+    </div>
+    <div class="result-divider divider-b"></div>
+    <div class="result-body">
+      他會關注你，但頻率不高，偏向偶爾想起、順便看看，帶著一點懷念，但整體是收斂與抽離的狀態，不太會延伸更多情緒或行動。
+    </div>
+    <div class="magic-box magic-box-b">
+      <div class="magic-label magic-label-b">✦ 建議魔法商品</div>
+      <div class="magic-text">初心＋錢錢到，幫助你穩定生活重心，讓關係自然淡化。</div>
+    </div>
+  </div>
+
+  <div class="result-panel" id="result-c">
+    <div class="top-actions">
+      <button class="action-btn back-btn-styled" onclick="goBack()">← 重新選擇</button>
+    </div>
+    <div class="result-header">
+      <div class="result-badge-circle badge-c">C</div>
+      <div>
+        <div class="result-title">帶著情緒的偷偷關注</div>
+        <div class="result-subtitle">內心有感覺，但不會讓你發現</div>
+      </div>
+    </div>
+    <div class="result-divider divider-c"></div>
+    <div class="result-body">
+      代表他會偷偷關注你，而且是帶著情緒的關注，內心有不平衡或不甘心，同時對你還有感覺，所以會一邊看一邊自己解讀，但不會讓你發現，也不太會正面行動。
+    </div>
+    <div class="magic-box magic-box-c">
+      <div class="magic-label magic-label-c">✦ 建議魔法商品</div>
+      <div class="magic-text">澄光＋錢錢到，清理對方帶來的情緒干擾，同時穩住你自己的狀態與生活重心。</div>
+    </div>
+  </div>
+
+  <div class="cta-section" id="cta-box" style="display:none;">
+    <div class="cta-text">
+      如果你看到這裡，發現自己其實還是在意他到底有沒有更進一步的想法，或是這段關係還會不會有變化⋯<br><br>
+      <strong>其實可以幫你再往下看得更細</strong>，像是他接下來會不會主動、你們的發展機會，甚至這段關係最後會走向哪裡。
+    </div>
+    <a class="cta-btn" href="https://lin.ee/yjiTcA0">立即預約占卜 ✦</a>
+  </div>
+
+  <div class="reviews-section">
+    <div class="reviews-title">占卜好評見證</div>
+    <div class="reviews-stars">★★★★★</div>
+    <div class="review-card">
+      <div class="review-quote">「真的是都說中我的心聲！全部都有對應到目前的狀況，其實一直在抱有期待，但對方不會明確承擔，把這些都拿工作當擋箭牌。目前也會把重心放在自己身上調整心態 💕」</div>
+      <span class="review-tag">好評 +1</span>
+    </div>
+    <div class="review-card">
+      <div class="review-quote">「真的好準！以前每次我想努力和他溝通解決的時候，他總是用很多理由去逃避。謝謝你～可以學著照顧自己慢慢放下了。」</div>
+      <span class="review-tag">好評 +1 ❤️</span>
+    </div>
+    <div class="review-card">
+      <div class="review-quote">「確實與我現在的心境相符！我一直覺得自己能力不夠所以很猶豫，老師真的很準確！謝謝老師」</div>
+      <span class="review-tag">好評 +1</span>
+    </div>
+    <div class="review-card">
+      <div class="review-quote">「老師真的很溫暖也很仔細，每字每句真的都打中我內心那些無法說出口的想法。跟老師聊完我真的覺得有被真正理解和接住的感覺！」</div>
+      <span class="review-tag">★★★★★</span>
+    </div>
+    <div class="brand-tag">Mita_tarot_ ｜米塔塔羅</div>
+  </div>
+
+</div>
+
+<script>
+function spawnStars(btn) {
+  var emojis = ['✨','⭐','💫','🌟','✦','✧'];
+  for (var i = 0; i < 8; i++) {
+    (function(i) {
+      setTimeout(function() {
+        var star = document.createElement('span');
+        star.className = 'star-particle';
+        star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        var rect = btn.getBoundingClientRect();
+        var parentRect = btn.parentElement.getBoundingClientRect();
+        star.style.left = (Math.random() * btn.offsetWidth) + 'px';
+        star.style.top = (Math.random() * btn.offsetHeight * 0.7) + 'px';
+        star.style.animationDelay = '0s';
+        btn.appendChild(star);
+        setTimeout(function() { if (star.parentNode) star.parentNode.removeChild(star); }, 1300);
+      }, i * 80);
+    })(i);
+  }
+}
+
+function showResult(choice, btn) {
+  spawnStars(btn);
+  setTimeout(function() {
+    document.getElementById('pick-section').style.display = 'none';
+    document.getElementById('result-' + choice).classList.add('show');
+    document.getElementById('cta-box').style.display = 'block';
+  }, 400);
+}
+
+function goBack() {
+  ['a','b','c'].forEach(function(c) {
+    var el = document.getElementById('result-' + c);
+    el.classList.remove('show');
+  });
+  document.getElementById('cta-box').style.display = 'none';
+  document.getElementById('pick-section').style.display = 'block';
+}
+</script>
