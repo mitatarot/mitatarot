@@ -1,0 +1,197 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{font-family:var(--font-sans);padding:2.5rem 1.5rem 3rem;background:transparent}
+.top-deco{text-align:center;color:#d4a8e8;letter-spacing:10px;font-size:13px;margin-bottom:.6rem}
+.main-title{text-align:center;font-size:22px;font-weight:500;color:#a855c8;letter-spacing:3px;margin-bottom:.3rem}
+.sub-title{text-align:center;font-size:13px;color:#c98ee0;letter-spacing:1px;margin-bottom:.4rem}
+.star-row{text-align:center;font-size:14px;color:#e0b8f5;letter-spacing:6px;margin-bottom:1.6rem}
+.question{text-align:center;font-size:15px;font-weight:500;color:#9b50bf;margin-bottom:2rem;line-height:1.7}
+.cards-grid{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:2rem}
+.card{width:185px;min-height:300px;border-radius:22px;border:2px solid rgba(196,120,228,0.35);background:#fdf4ff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1.6rem 1rem;transition:transform .25s,box-shadow .2s,border-color .2s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-10px) rotate(-1.5deg);box-shadow:0 16px 36px rgba(168,85,200,0.18);border-color:rgba(196,120,228,0.75)}
+.card-letter{font-size:28px;font-weight:500;color:#b06acc;letter-spacing:2px}
+.card-hr{width:50px;height:1.5px;background:rgba(196,120,228,0.4);border-radius:2px}
+.card-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.card-icon{width:56px;height:56px;border-radius:50%;background:rgba(196,120,228,0.12);border:1.5px solid rgba(196,120,228,0.3);display:flex;align-items:center;justify-content:center}
+.card-icon svg{width:28px;height:28px}
+.card-tarot{font-size:12px;color:#bb82d4;text-align:center;line-height:1.7;letter-spacing:.5px}
+.card-foot{font-size:11px;color:#d4a8e8;letter-spacing:3px}
+.result-wrap{display:none;max-width:580px;margin:0 auto;border-radius:22px;background:#fdf4ff;border:1.5px solid rgba(196,120,228,0.3);overflow:hidden}
+.result-wrap.show{display:block;animation:fadeUp .45s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.result-top{background:rgba(196,120,228,0.1);padding:1.4rem 1.6rem;border-bottom:1px solid rgba(196,120,228,0.2)}
+.result-badge-row{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+.r-badge{background:#c478e4;color:#fff;font-size:13px;font-weight:500;padding:4px 16px;border-radius:20px;letter-spacing:2px}
+.r-tarot-name{font-size:13px;color:#9b50bf;letter-spacing:.5px}
+.r-headline{font-size:15px;font-weight:500;color:#8b3db8;line-height:1.6}
+.result-body{padding:1.4rem 1.6rem}
+.r-text{font-size:14px;color:#7a3a90;line-height:1.9;margin-bottom:1rem}
+.r-text p{margin-bottom:.7rem}
+.r-divider{height:1px;background:rgba(196,120,228,0.25);margin:.8rem 0}
+.r-magic{background:rgba(196,120,228,0.1);border-left:3px solid #d490ea;border-radius:0 10px 10px 0;padding:.8rem 1rem;font-size:13px;color:#8a40a8;line-height:1.75}
+.r-magic b{color:#a855c8;font-weight:500}
+.cta-block{margin:1.6rem 0 0;background:rgba(196,120,228,0.08);border:1.5px solid rgba(196,120,228,0.25);border-radius:14px;padding:1.2rem 1.4rem;text-align:center}
+.cta-text{font-size:13px;color:#8a40a8;line-height:1.85;margin-bottom:.9rem}
+.cta-btn{display:inline-block;background:#c478e4;color:#fff;font-size:14px;font-weight:500;padding:10px 28px;border-radius:24px;text-decoration:none;letter-spacing:1px;border:none;cursor:pointer;transition:background .2s}
+.cta-btn:hover{background:#b060d0}
+.back-btn{display:block;width:fit-content;margin:1.2rem auto 0;background:transparent;border:1.5px solid rgba(196,120,228,0.4);color:#a855c8;font-size:13px;padding:7px 22px;border-radius:20px;cursor:pointer;transition:background .2s;font-family:var(--font-sans);letter-spacing:1px}
+.back-btn:hover{background:rgba(196,120,228,0.1)}
+@media(prefers-color-scheme:dark){
+  .wrap{color:#e0c0f0}
+  .card{background:#1e1028;border-color:rgba(196,120,228,0.28)}
+  .card:hover{border-color:rgba(196,120,228,0.65)}
+  .card-letter{color:#d48be0}
+  .card-tarot{color:#bb82d4}
+  .card-foot{color:#8050a0}
+  .question{color:#c080d8}
+  .main-title{color:#d090e0}
+  .sub-title{color:#9060b0}
+  .top-deco,.star-row{color:#6030a0}
+  .result-wrap{background:#1e1028;border-color:rgba(196,120,228,0.25)}
+  .result-top{background:rgba(196,120,228,0.08);border-bottom-color:rgba(196,120,228,0.15)}
+  .r-headline{color:#d090e0}
+  .r-tarot-name{color:#c080d8}
+  .r-text{color:#c090d8}
+  .r-magic{background:rgba(196,120,228,0.08);color:#b070c8}
+  .r-magic b{color:#d090e8}
+  .cta-block{background:rgba(196,120,228,0.07);border-color:rgba(196,120,228,0.2)}
+  .cta-text{color:#b070c8}
+  .back-btn{color:#c080d8;border-color:rgba(196,120,228,0.3)}
+  .back-btn:hover{background:rgba(196,120,228,0.08)}
+  .card-icon{background:rgba(196,120,228,0.1);border-color:rgba(196,120,228,0.25)}
+}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">塔羅占卜：測他有在等待你的訊息嗎？選擇 A、B 或 C 牌查看解答</h2>
+
+<div class="wrap">
+  <div id="pick-view">
+    <div class="top-deco">✦ · · ✦ · · ✦</div>
+    <div class="main-title">塔 羅 占 卜</div>
+    <div class="sub-title">閉上眼睛，感受你的直覺</div>
+    <div class="star-row">✧ ✦ ✧ ✦ ✧</div>
+    <div class="question">測 他 有 在 等 待 你 的 訊 息 嗎 ？<br><span style="font-size:13px;color:#c090d8;font-weight:400">選一張讓你心動的牌</span></div>
+    <div class="cards-grid">
+
+      <div class="card" onclick="reveal('A')">
+        <div class="card-letter">A</div>
+        <div class="card-hr"></div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">
+            <svg viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="7" stroke="#c478e4" stroke-width="1.5"/>
+              <path d="M14 4 Q18 9 14 14 Q10 9 14 4Z" fill="#e4b0f5" opacity=".7"/>
+              <circle cx="14" cy="14" r="2" fill="#c478e4"/>
+              <line x1="14" y1="2" x2="14" y2="5" stroke="#d4a0e8" stroke-width="1.2"/>
+              <line x1="14" y1="23" x2="14" y2="26" stroke="#d4a0e8" stroke-width="1.2"/>
+              <line x1="2" y1="14" x2="5" y2="14" stroke="#d4a0e8" stroke-width="1.2"/>
+              <line x1="23" y1="14" x2="26" y2="14" stroke="#d4a0e8" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="card-tarot">月亮<br>聖杯騎士<br>寶劍三</div>
+        </div>
+        <div class="card-hr"></div>
+        <div class="card-foot">✦ 直覺 · 等待 ✦</div>
+      </div>
+
+      <div class="card" onclick="reveal('B')">
+        <div class="card-letter">B</div>
+        <div class="card-hr"></div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">
+            <svg viewBox="0 0 28 28" fill="none">
+              <polygon points="14,3 17,11 26,11 19,17 22,25 14,20 6,25 9,17 2,11 11,11" stroke="#c478e4" stroke-width="1.3" fill="#f0d0fa" opacity=".6"/>
+              <circle cx="14" cy="14" r="3" fill="#c478e4"/>
+            </svg>
+          </div>
+          <div class="card-tarot">權杖二<br>星星<br>聖杯六</div>
+        </div>
+        <div class="card-hr"></div>
+        <div class="card-foot">✦ 期待 · 情感 ✦</div>
+      </div>
+
+      <div class="card" onclick="reveal('C')">
+        <div class="card-letter">C</div>
+        <div class="card-hr"></div>
+        <div class="card-icon-wrap">
+          <div class="card-icon">
+            <svg viewBox="0 0 28 28" fill="none">
+              <path d="M14 5 L20 22 L14 18 L8 22 Z" stroke="#c478e4" stroke-width="1.3" fill="#f0d0fa" opacity=".5"/>
+              <circle cx="14" cy="12" r="2.5" fill="#c478e4"/>
+              <path d="M10 25 Q14 21 18 25" stroke="#c478e4" stroke-width="1.2" fill="none"/>
+            </svg>
+          </div>
+          <div class="card-tarot">審判<br>聖杯騎士<br>權杖一逆</div>
+        </div>
+        <div class="card-hr"></div>
+        <div class="card-foot">✦ 重啟 · 靠近 ✦</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="result-wrap" id="result-view">
+    <div class="result-top">
+      <div class="result-badge-row">
+        <span class="r-badge" id="r-badge">A</span>
+        <span class="r-tarot-name" id="r-tarot"></span>
+      </div>
+      <div class="r-headline" id="r-headline"></div>
+    </div>
+    <div class="result-body">
+      <div class="r-text" id="r-text"></div>
+      <div class="r-divider"></div>
+      <div class="r-magic" id="r-magic"></div>
+      <div class="cta-block">
+        <div class="cta-text">如果你最近也有一段讓你反覆猜測、放不下的關係<br>可以透過占卜，幫你更看清對方現在真正的想法與後續發展。<br><br>目前也有搭配專屬能量商品：<b>初心、澄光、錢錢到</b><br>會依照你的感情狀態與能量狀況幫你推薦適合的方向。<br><br>有想進一步細看感情、曖昧、復合或對方心態，都可以私訊預約占卜。</div>
+        <a class="cta-btn" href="https://lin.ee/N3XQCAl" target="_blank">預約官方 LINE</a>
+      </div>
+      <button class="back-btn" onclick="goBack()">← 重新選擇</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const data={
+  A:{
+    badge:'選項 A',
+    tarot:'月亮 · 聖杯騎士 · 寶劍三',
+    headline:'他其實有在注意你，但更多的是「想很多卻不敢主動」',
+    text:`<p>這組牌很像一個人一直反覆看訊息、觀察動態，心裡有期待，可是又怕自己太明顯。</p><p>目前他的情緒沒有表現得很直接，甚至會故意裝沒事。卡在自己的想法裡，明明想聯絡、想知道你的動態，卻又不知道該怎麼開口。</p><p>如果最近是冷淡期，其實他心裡沒有真正放下，只是還在觀望你會不會主動靠近。</p>`,
+    magic:'<b>建議魔法能量：初心、澄光</b><br>幫助關係重新流動，也比較適合想改善互動停滯的人。'
+  },
+  B:{
+    badge:'選項 B',
+    tarot:'權杖二 · 星星 · 聖杯六',
+    headline:'他有在等你的訊息，但這個等待感比較複雜',
+    text:`<p>他其實很在意情緒交流，也不是完全沒感情，但又處於一種「不知道該不該靠近」的狀態。</p><p>目前有一點防備感，代表他可能會偷偷關注你、想你，但表面又裝得很淡，甚至故意不主動。</p><p>有些人抽到這組，通常雙方之間曾經有誤會、拉扯，或者其中一方比較嘴硬。</p>`,
+    magic:'<b>適合搭配：澄光、錢錢到</b><br>穩定情緒關係，同時也避免自己一直陷在反覆內耗裡。'
+  },
+  C:{
+    badge:'選項 C',
+    tarot:'審判 · 聖杯騎士 · 權杖一逆',
+    headline:'這組很明顯有「想重新靠近」的感覺',
+    text:`<p>審判代表他近期其實有重新想起你、重新思考這段關係；聖杯騎士也代表情感上的靠近與期待。</p><p>但最後的權杖一逆很關鍵——他現在缺少一個真正行動的契機。所以會變成：他心裡其實有在等你，但又不知道怎麼開啟話題，甚至可能已經想過很多次要不要傳訊息給你。</p><p>這組很容易出現：<b style="color:#a855c8;font-weight:500">「只差一個人先開口。」</b></p>`,
+    magic:'<b>適合搭配：初心、澄光</b><br>如果你們最近剛好處於斷聯、冷淡或曖昧停滯期，這組很適合幫助關係重新升溫。'
+  }
+};
+function reveal(k){
+  const d=data[k];
+  document.getElementById('r-badge').textContent=d.badge;
+  document.getElementById('r-tarot').textContent=d.tarot;
+  document.getElementById('r-headline').textContent=d.headline;
+  document.getElementById('r-text').innerHTML=d.text;
+  document.getElementById('r-magic').innerHTML=d.magic;
+  document.getElementById('pick-view').style.display='none';
+  const rv=document.getElementById('result-view');
+  rv.style.display='block';
+  rv.classList.add('show');
+}
+function goBack(){
+  document.getElementById('pick-view').style.display='block';
+  const rv=document.getElementById('result-view');
+  rv.style.display='none';
+  rv.classList.remove('show');
+}
+</script>
