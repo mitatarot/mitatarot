@@ -1,0 +1,451 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body { background: transparent; }
+
+  .scene {
+    min-height: 520px;
+    padding: 24px 16px 32px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.55), rgba(200,170,255,0.18));
+    border: 1.5px solid rgba(210,180,255,0.38);
+    animation: floatBubble linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes floatBubble {
+    0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+    50%  { transform: translateY(-30px) scale(1.04); opacity: 0.9; }
+    100% { transform: translateY(0) scale(1); opacity: 0.7; }
+  }
+
+  .title-area {
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .title-area h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #7c4dbd;
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+  }
+
+  .title-area p {
+    font-size: 12px;
+    color: #b18ee0;
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  .cards-row {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card {
+    width: 96px;
+    height: 156px;
+    border-radius: 16px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    perspective: 600px;
+  }
+
+  .card:active { transform: scale(0.96); }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+    transform-style: preserve-3d;
+  }
+
+  .card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-back, .card-front {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .card-back {
+    background: linear-gradient(145deg, #e8d9f7 0%, #d9c5f5 40%, #c9b2f0 100%);
+    border: 1.5px solid rgba(180,140,240,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 18px rgba(160,100,230,0.18);
+  }
+
+  .card-back .card-label {
+    font-size: 28px;
+    font-weight: 700;
+    color: #7c4dbd;
+    line-height: 1;
+  }
+
+  .card-back .card-hint {
+    font-size: 11px;
+    color: #a07dd4;
+    letter-spacing: 0.08em;
+  }
+
+  .card-back .deco {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.28);
+  }
+
+  .card-front {
+    transform: rotateY(180deg);
+    background: linear-gradient(160deg, #fdf7ff 0%, #f5edff 60%, #ede0ff 100%);
+    border: 1.5px solid rgba(180,140,240,0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    box-shadow: 0 4px 18px rgba(160,100,230,0.15);
+  }
+
+  .card-front .card-icon {
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .card-front .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #7c4dbd;
+    text-align: center;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+
+  .card-front .card-subtitle {
+    font-size: 10px;
+    color: #b18ee0;
+    text-align: center;
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .card-letter {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9b6dd1;
+    letter-spacing: 0.06em;
+  }
+
+  .panel {
+    display: none;
+    position: relative;
+    z-index: 2;
+    margin-top: 22px;
+    background: rgba(245,235,255,0.75);
+    border: 1.5px solid rgba(180,140,240,0.3);
+    border-radius: 18px;
+    padding: 18px 16px 20px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .panel.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-tag {
+    display: inline-block;
+    background: linear-gradient(90deg, #c9a0f5, #b07de8);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .panel-headline {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b3ab0;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .panel-body {
+    font-size: 13px;
+    color: #5a3a8a;
+    line-height: 1.85;
+  }
+
+  .panel-cards-used {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 10px;
+  }
+
+  .pill {
+    background: rgba(200,165,245,0.3);
+    border: 1px solid rgba(180,140,240,0.35);
+    border-radius: 20px;
+    font-size: 11px;
+    color: #7c4dbd;
+    padding: 3px 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .panel-combo {
+    background: rgba(220,200,255,0.35);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 10px;
+  }
+
+  .combo-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8b55c5;
+    margin-bottom: 5px;
+    letter-spacing: 0.04em;
+  }
+
+  .combo-item {
+    font-size: 12px;
+    color: #6b3ab0;
+    line-height: 1.7;
+    padding-left: 8px;
+    border-left: 2px solid rgba(180,140,240,0.5);
+    margin-bottom: 3px;
+  }
+
+  .panel-cta {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    background: linear-gradient(135deg, #c9a0f5, #a57de0);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    transition: opacity 0.15s;
+  }
+
+  .panel-cta:hover { opacity: 0.88; }
+
+  .close-btn {
+    float: right;
+    background: none;
+    border: none;
+    color: #b18ee0;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    margin-top: -2px;
+  }
+</style>
+
+<div class="scene" id="scene">
+
+  <div class="title-area">
+    <h2>✨ 他忽冷忽熱的原因</h2>
+    <p>點選牌卡，翻開屬於你的答案</p>
+  </div>
+
+  <div class="cards-row">
+    <div class="card-wrap">
+      <div class="card" id="cardA" onclick="flipCard('A')">
+        <div class="card-inner">
+          <div class="card-back">
+            <div class="deco" style="width:50px;height:50px;top:-12px;right:-10px;"></div>
+            <div class="deco" style="width:28px;height:28px;bottom:-6px;left:-6px;"></div>
+            <div class="card-label">A</div>
+            <div class="card-hint">點我翻牌</div>
+          </div>
+          <div class="card-front">
+            <div class="card-icon">🌙</div>
+            <div class="card-title">內心顧慮型</div>
+            <div class="card-subtitle">審判逆 · 星幣十 · 隱者</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-letter">選項 A</div>
+    </div>
+
+    <div class="card-wrap">
+      <div class="card" id="cardB" onclick="flipCard('B')">
+        <div class="card-inner">
+          <div class="card-back">
+            <div class="deco" style="width:44px;height:44px;top:-10px;left:-10px;"></div>
+            <div class="deco" style="width:32px;height:32px;bottom:-8px;right:-4px;"></div>
+            <div class="card-label">B</div>
+            <div class="card-hint">點我翻牌</div>
+          </div>
+          <div class="card-front">
+            <div class="card-icon">💜</div>
+            <div class="card-title">情緒起伏型</div>
+            <div class="card-subtitle">聖杯四 · 聖杯侍者 · 世界逆</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-letter">選項 B</div>
+    </div>
+
+    <div class="card-wrap">
+      <div class="card" id="cardC" onclick="flipCard('C')">
+        <div class="card-inner">
+          <div class="card-back">
+            <div class="deco" style="width:38px;height:38px;top:-8px;right:-6px;"></div>
+            <div class="deco" style="width:24px;height:24px;bottom:-4px;left:-4px;"></div>
+            <div class="card-label">C</div>
+            <div class="card-hint">點我翻牌</div>
+          </div>
+          <div class="card-front">
+            <div class="card-icon">🌸</div>
+            <div class="card-title">現實壓力型</div>
+            <div class="card-subtitle">星幣九逆 · 星幣侍者 · 寶劍九逆</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-letter">選項 C</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panelA">
+    <button class="close-btn" onclick="closePanel('A')">✕</button>
+    <div class="panel-tag">選項 A ｜ 審判逆 · 星幣十 · 隱者</div>
+    <div class="panel-headline">🌙 他不是沒感覺，而是越在意越容易退縮</div>
+    <div class="panel-body">
+      他忽冷忽熱的原因，其實比較像是「內心有顧慮，但又不想完全放掉」。<br><br>
+      <strong style="color:#7c4dbd;">審判逆</strong>代表他對這段關係還沒有真正想清楚，很多情緒跟想法卡在心裡，甚至有點逃避面對。<strong style="color:#7c4dbd;">星幣十</strong>顯示他其實會考量很多現實層面——未來、穩定感、彼此價值觀、身邊環境的影響。最後的<strong style="color:#7c4dbd;">隱者</strong>很明顯，他現在偏向收起情緒、自我觀察，所以才會一下靠近、一下又退回去。
+    </div>
+    <div class="panel-combo">
+      <div class="combo-title">✨ 適合搭配</div>
+      <div class="combo-item">「澄光」：先做情緒與能量上的淨化，減少關係中的卡頓感</div>
+      <div class="combo-item">「初心」：幫助感情重新回到最初的連結感</div>
+    </div>
+    <a class="panel-cta" href="https://lin.ee/Vy8w4FR" target="_blank">想看後續發展？預約個人占卜解析 🫶</a>
+  </div>
+
+  <div class="panel" id="panelB">
+    <button class="close-btn" onclick="closePanel('B')">✕</button>
+    <div class="panel-tag">選項 B ｜ 聖杯四 · 聖杯侍者 · 世界逆</div>
+    <div class="panel-headline">💜 有好感，但情緒不穩定</div>
+    <div class="panel-body">
+      這組的忽冷忽熱，是典型的「有好感，但情緒起伏大」。<br><br>
+      <strong style="color:#7c4dbd;">聖杯四</strong>代表他目前內心有點悶悶的，容易陷在自己的情緒裡，有時候不是你做錯什麼，而是他自己的狀態在起伏。<strong style="color:#7c4dbd;">聖杯侍者</strong>代表他其實是有感覺的，也會想主動靠近互動。但<strong style="color:#7c4dbd;">世界逆</strong>顯示這段關係目前還有某種卡住的地方，他自己也還沒準備好進入穩定狀態。<br><br>
+      很容易變成：一靠近就熱，一有情緒又突然冷掉。
+    </div>
+    <div class="panel-combo">
+      <div class="combo-title">✨ 適合搭配</div>
+      <div class="combo-item">「澄光」：穩定混亂情緒、減少能量內耗</div>
+      <div class="combo-item">「心動」：提升互動流動感與曖昧升溫能量</div>
+    </div>
+    <a class="panel-cta" href="https://lin.ee/Vy8w4FR" target="_blank">想看後續發展？預約個人占卜解析 🫶</a>
+  </div>
+
+  <div class="panel" id="panelC">
+    <button class="close-btn" onclick="closePanel('C')">✕</button>
+    <div class="panel-tag">選項 C ｜ 星幣九逆 · 星幣侍者 · 寶劍九逆</div>
+    <div class="panel-headline">🌸 想靠近你，但又怕自己做不好</div>
+    <div class="panel-body">
+      這組偏向「現實壓力影響感情狀態」。<br><br>
+      <strong style="color:#7c4dbd;">星幣九逆</strong>代表他現在對自己沒有太多安全感，可能覺得自己狀態不夠好。<strong style="color:#7c4dbd;">星幣侍者</strong>代表他並不是沒想認真，只是步調慢、偏被動。<strong style="color:#7c4dbd;">寶劍九逆</strong>則顯示他最近其實有慢慢從焦慮或壓力中恢復，但內心還是容易反覆。<br><br>
+      他的忽冷忽熱，比較像：想靠近你，但又怕自己做不好。
+    </div>
+    <div class="panel-combo">
+      <div class="combo-title">✨ 適合搭配</div>
+      <div class="combo-item">「澄光」：先淨化壓力與負面情緒能量</div>
+      <div class="combo-item">「錢錢到」：穩定事業與財運能量，也有助於提升他的安全感與行動力</div>
+    </div>
+    <a class="panel-cta" href="https://lin.ee/Vy8w4FR" target="_blank">想看後續發展？預約個人占卜解析 🫶</a>
+  </div>
+</div>
+
+<script>
+const bubbleData = [
+  {w:48,h:48,l:5,t:8,dur:5.2},
+  {w:28,h:28,l:72,t:14,dur:4.0},
+  {w:36,h:36,l:55,t:60,dur:6.1},
+  {w:20,h:20,l:15,t:72,dur:4.8},
+  {w:54,h:54,l:82,t:48,dur:5.7},
+  {w:22,h:22,l:40,t:90,dur:3.9},
+  {w:16,h:16,l:88,t:82,dur:5.0},
+  {w:30,h:30,l:3,t:42,dur:6.3},
+];
+
+const scene = document.getElementById('scene');
+bubbleData.forEach(b => {
+  const el = document.createElement('div');
+  el.className = 'bubble';
+  el.style.cssText = `width:${b.w}px;height:${b.h}px;left:${b.l}%;top:${b.t}%;animation-duration:${b.dur}s;`;
+  scene.appendChild(el);
+});
+
+let currentPanel = null;
+
+function flipCard(id) {
+  const card = document.getElementById('card' + id);
+  card.classList.toggle('flipped');
+
+  if (currentPanel && currentPanel !== id) {
+    closePanel(currentPanel);
+  }
+
+  const panel = document.getElementById('panel' + id);
+  if (card.classList.contains('flipped')) {
+    panel.classList.add('visible');
+    currentPanel = id;
+    setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 300);
+  } else {
+    panel.classList.remove('visible');
+    currentPanel = null;
+  }
+}
+
+function closePanel(id) {
+  document.getElementById('panel' + id).classList.remove('visible');
+  document.getElementById('card' + id).classList.remove('flipped');
+  if (currentPanel === id) currentPanel = null;
+}
+</script>
