@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>你們之間卡住的原因</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-50: #fff0f6;
+    --pink-100: #ffd6e8;
+    --pink-200: #ffb3d1;
+    --pink-300: #ff80b5;
+    --pink-400: #f553a0;
+    --pink-soft: #fce4f0;
+    --purple-50: #f8f0ff;
+    --purple-100: #eddeff;
+    --purple-200: #dbbfff;
+    --purple-300: #c49aff;
+    --purple-400: #a970ff;
+    --purple-500: #8b47e8;
+    --purple-600: #6d28c9;
+    --rose-100: #ffe4ee;
+    --text-deep: #3d1a5e;
+    --text-mid: #6b3f9e;
+    --text-soft: #9b72cb;
+    --text-light: #c4a0e8;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #fdf0f8 0%, #f5e8ff 35%, #fde8f5 65%, #ede0ff 100%);
+    font-family: 'Noto Serif TC', serif;
+    color: var(--text-deep);
+    overflow-x: hidden;
+  }
+
+  /* Bubble background */
+  .bubbles-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bubble-float {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.7), rgba(220,180,255,0.15));
+    border: 1px solid rgba(210,170,255,0.3);
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-120px) scale(1.1); opacity: 0; }
+  }
+
+  .page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 0 60px;
+  }
+
+  /* Hero header */
+  .hero {
+    text-align: center;
+    padding: 48px 24px 32px;
+    position: relative;
+  }
+
+  .hero-deco {
+    position: absolute;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(200,155,255,0.22) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .hero-eyebrow::before,
+  .hero-eyebrow::after {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--text-light));
+  }
+  .hero-eyebrow::after { background: linear-gradient(90deg, var(--text-light), transparent); }
+
+  .hero-title {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-deep);
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+
+  .hero-subtitle {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+  }
+
+  .sparkle-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: 15px;
+    opacity: 0.7;
+  }
+
+  /* Cards section */
+  .cards-section {
+    padding: 0 20px 8px;
+  }
+
+  .cards-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    margin-bottom: 22px;
+  }
+
+  .cards-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .card-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 110px;
+  }
+
+  /* Tarot card - real proportions 2:3.5 ratio */
+  .tarot-card {
+    width: 100%;
+    aspect-ratio: 2 / 3.5;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .tarot-card:active { transform: scale(0.96); }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .tarot-card.flipped .card-inner {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  /* Card back */
+  .card-back-face {
+    background: linear-gradient(145deg, #f5e0ff 0%, #e8ccff 30%, #f0d5ff 60%, #ddc8ff 100%);
+    border: 1.5px solid rgba(180,130,240,0.4);
+    box-shadow: 0 8px 28px rgba(160,100,230,0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .card-back-border {
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(200,160,255,0.5);
+    border-radius: 9px;
+  }
+
+  .card-back-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4) 0%, transparent 60%),
+      repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(200,170,255,0.08) 8px, rgba(200,170,255,0.08) 9px),
+      repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(200,170,255,0.08) 8px, rgba(200,170,255,0.08) 9px);
+  }
+
+  .card-back-letter {
+    position: relative;
+    z-index: 2;
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 400;
+    color: #8b47e8;
+    text-shadow: 0 2px 8px rgba(140,80,240,0.25);
+    line-height: 1;
+  }
+
+  .card-back-hint {
+    position: relative;
+    z-index: 2;
+    font-size: 10px;
+    color: #b088dc;
+    letter-spacing: 0.1em;
+  }
+
+  .bubble-deco {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.6);
+  }
+
+  /* Card front */
+  .card-front-face {
+    transform: rotateY(180deg);
+    background: linear-gradient(155deg, #fff8fe 0%, #fdf0ff 50%, #f8e8ff 100%);
+    border: 1.5px solid rgba(200,160,255,0.45);
+    box-shadow: 0 8px 28px rgba(160,100,230,0.18), inset 0 1px 0 rgba(255,255,255,0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    gap: 5px;
+  }
+
+  .card-front-glyph {
+    font-size: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(160,100,230,0.3));
+  }
+
+  .card-front-label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #7c40c0;
+    text-align: center;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+
+  .card-front-cards {
+    font-size: 9.5px;
+    color: #b088dc;
+    text-align: center;
+    line-height: 1.55;
+    letter-spacing: 0.03em;
+  }
+
+  .card-front-border {
+    position: absolute;
+    inset: 7px;
+    border: 0.5px solid rgba(200,160,255,0.4);
+    border-radius: 9px;
+  }
+
+  .card-label-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: 0.08em;
+  }
+
+  /* Answer panel */
+  .answer-area {
+    padding: 0 20px;
+    margin-top: 28px;
+  }
+
+  .answer-panel {
+    display: none;
+    animation: slideUp 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .answer-panel.visible { display: block; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-card {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(215,175,255,0.45);
+    border-radius: 22px;
+    padding: 22px 20px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 30px rgba(160,100,230,0.1);
+  }
+
+  .panel-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -30px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(220,185,255,0.3), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .panel-card::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -20px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(255,200,230,0.25), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .panel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(90deg, #e8c8ff, #ffc8e8);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #7c40c0;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .panel-section-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-soft);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .panel-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(200,160,255,0.4), transparent);
+  }
+
+  .panel-body {
+    font-size: 14px;
+    line-height: 2;
+    color: #4a2878;
+    letter-spacing: 0.03em;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .highlight-card {
+    display: inline;
+    background: linear-gradient(120deg, rgba(225,195,255,0.5), rgba(255,210,235,0.5));
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #7c40c0;
+  }
+
+  .advice-box {
+    background: linear-gradient(135deg, rgba(240,220,255,0.5), rgba(255,225,240,0.5));
+    border: 1px solid rgba(210,175,255,0.4);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .advice-box p {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: #5a3290;
+    letter-spacing: 0.03em;
+  }
+
+  .product-box {
+    background: rgba(255,248,254,0.8);
+    border: 1px dashed rgba(200,160,255,0.55);
+    border-radius: 14px;
+    padding: 14px 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .product-item {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #7c40c0;
+    letter-spacing: 0.03em;
+  }
+
+  .product-name {
+    display: inline-block;
+    background: linear-gradient(90deg, #c49aff, #f080c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .product-desc {
+    font-size: 12.5px;
+    color: #9b72cb;
+    line-height: 1.7;
+    margin-top: 2px;
+  }
+
+  .product-sep {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,160,255,0.3), transparent);
+    margin: 8px 0;
+  }
+
+  /* CTA section */
+  .cta-section {
+    padding: 0 20px;
+    margin-top: 20px;
+  }
+
+  .cta-card {
+    background: linear-gradient(135deg, rgba(235,210,255,0.7), rgba(255,210,235,0.7));
+    border: 1px solid rgba(200,160,255,0.35);
+    border-radius: 22px;
+    padding: 22px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, rgba(255,255,255,0.45), transparent 65%);
+    border-radius: 50%;
+  }
+
+  .cta-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -20px;
+    width: 110px; height: 110px;
+    background: radial-gradient(circle, rgba(255,255,255,0.35), transparent 65%);
+    border-radius: 50%;
+  }
+
+  .cta-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-deep);
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+
+  .cta-list {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 2;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+    position: relative; z-index: 1;
+  }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #c49aff 0%, #e060b0 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(180,100,230,0.35);
+    transition: all 0.2s;
+    position: relative; z-index: 1;
+    margin-bottom: 10px;
+  }
+
+  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 13px 20px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid rgba(200,160,255,0.5);
+    color: var(--text-mid);
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 13.5px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative; z-index: 1;
+  }
+
+  .btn-secondary:active { transform: scale(0.98); opacity: 0.85; }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 20px 0;
+    margin-top: 6px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,160,255,0.3), transparent);
+  }
+
+  .divider-icon { font-size: 12px; color: var(--text-light); }
+
+  /* Reset link */
+  .reset-link {
+    display: block;
+    text-align: center;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(180,140,220,0.4);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 24px 20px 0;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<div class="bubbles-bg" id="bubblesContainer"></div>
+
+<div class="page-wrap">
+
+  <div class="hero">
+    <div class="hero-deco"></div>
+    <div class="hero-eyebrow">大眾占卜</div>
+    <h1 class="hero-title">你們之間<br>卡住的原因是什麼？</h1>
+    <p class="hero-subtitle">靜下心來，選擇一張牌<br>讓牌卡帶來屬於你的答案</p>
+    <div class="sparkle-row">
+      <span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <p class="cards-hint">點選你直覺選中的牌卡</p>
+    <div class="cards-row">
+
+      <!-- Card A -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardA" onclick="selectCard('A')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="card-back-pattern"></div>
+              <div class="card-back-border"></div>
+              <div class="bubble-deco" style="width:22px;height:22px;top:10px;right:10px;"></div>
+              <div class="bubble-deco" style="width:14px;height:14px;bottom:14px;left:12px;"></div>
+              <div class="bubble-deco" style="width:8px;height:8px;bottom:32px;right:18px;"></div>
+              <div class="card-back-letter">A</div>
+              <div class="card-back-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="card-front-border"></div>
+              <div class="card-front-glyph">🌱</div>
+              <div class="card-front-label">等待時機型</div>
+              <div class="card-front-cards">魔術師<br>權杖一</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-label-tag">選項 A</span>
+      </div>
+
+      <!-- Card B -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardB" onclick="selectCard('B')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="card-back-pattern"></div>
+              <div class="card-back-border"></div>
+              <div class="bubble-deco" style="width:18px;height:18px;top:12px;left:11px;"></div>
+              <div class="bubble-deco" style="width:12px;height:12px;bottom:18px;right:14px;"></div>
+              <div class="bubble-deco" style="width:9px;height:9px;top:30px;right:9px;"></div>
+              <div class="card-back-letter">B</div>
+              <div class="card-back-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="card-front-border"></div>
+              <div class="card-front-glyph">🌙</div>
+              <div class="card-front-label">情傷保護型</div>
+              <div class="card-front-cards">戰車<br>聖杯逆</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-label-tag">選項 B</span>
+      </div>
+
+      <!-- Card C -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardC" onclick="selectCard('C')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="card-back-pattern"></div>
+              <div class="card-back-border"></div>
+              <div class="bubble-deco" style="width:20px;height:20px;bottom:12px;right:10px;"></div>
+              <div class="bubble-deco" style="width:11px;height:11px;top:16px;left:13px;"></div>
+              <div class="bubble-deco" style="width:7px;height:7px;top:38px;right:14px;"></div>
+              <div class="card-back-letter">C</div>
+              <div class="card-back-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="card-front-border"></div>
+              <div class="card-front-glyph">🌸</div>
+              <div class="card-front-label">心牆防備型</div>
+              <div class="card-front-cards">戀人<br>聖杯四</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-label-tag">選項 C</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Answer panels -->
+  <div class="answer-area">
+
+    <!-- Panel A -->
+    <div class="answer-panel" id="panelA">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 A 解析</div>
+
+        <div class="panel-section-title">卡住原因</div>
+        <div class="panel-body">
+          你們之間其實並不缺乏好感與吸引力，而是彼此都比較傾向先顧好自己的生活與規劃。有人在等待時機成熟，有人則想很多卻遲遲沒有行動。<br><br>
+          <span class="highlight-card">魔術師</span>代表有想法、有機會，但缺少實際推進；<span class="highlight-card">權杖一</span>則顯示這段關係其實還有發展空間與火花。
+        </div>
+
+        <div class="panel-section-title">給你的建議</div>
+        <div class="advice-box">
+          <p>少一點猜測，多一點互動。與其等待對方主動，不如從簡單的交流開始，讓關係重新流動。</p>
+        </div>
+
+        <div class="panel-section-title">✨ 魔法商品推薦</div>
+        <div class="product-box">
+          <div class="product-item">
+            <span class="product-name">心動</span>
+          </div>
+          <div class="product-desc">提升個人魅力與感情吸引力，增加互動與交流機會。</div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="resetCards()">↩ 重新選牌</span>
+    </div>
+
+    <!-- Panel B -->
+    <div class="answer-panel" id="panelB">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 B 解析</div>
+
+        <div class="panel-section-title">卡住原因</div>
+        <div class="panel-body">
+          這段關係可能曾經歷失望、受傷或某個重要轉折。其中一方心裡仍有未癒合的傷口，因此即使有感情，也會選擇保持距離。<br><br>
+          <span class="highlight-card">戰車</span>顯示有人正在逼自己向前走，不願再回頭面對過去的情緒。
+        </div>
+
+        <div class="panel-section-title">給你的建議</div>
+        <div class="advice-box">
+          <p>先照顧自己的內心，比急著推動關係更重要。當情緒被整理好，才能真正看清未來的方向。</p>
+        </div>
+
+        <div class="panel-section-title">✨ 魔法商品推薦</div>
+        <div class="product-box">
+          <div class="product-item">
+            <span class="product-name">澄光</span>
+          </div>
+          <div class="product-desc">協助淨化負面情緒與混亂思緒，找回內在平衡與清晰感。</div>
+          <div class="product-sep"></div>
+          <div class="product-item">
+            <span style="font-size:12px;color:#c080d0;">💕 若是復合議題，也可搭配</span>
+            <span class="product-name" style="font-size:13px;">初心</span>
+          </div>
+          <div class="product-desc">幫助修復關係能量。</div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="resetCards()">↩ 重新選牌</span>
+    </div>
+
+    <!-- Panel C -->
+    <div class="answer-panel" id="panelC">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 C 解析</div>
+
+        <div class="panel-section-title">卡住原因</div>
+        <div class="panel-body">
+          彼此之間其實有吸引力，也有一定程度的好感，但防備心太重。有人習慣獨立、不願依賴；有人害怕再次受傷，因此總是觀察、試探，而不敢真正靠近。<br><br>
+          <span class="highlight-card">戀人牌</span>代表感情基礎是存在的，只是缺少信任與安全感。
+        </div>
+
+        <div class="panel-section-title">給你的建議</div>
+        <div class="advice-box">
+          <p>放下過度防備，試著用更真誠的方式表達感受。很多時候真正阻礙關係的，不是不愛，而是不敢。</p>
+        </div>
+
+        <div class="panel-section-title">✨ 魔法商品推薦</div>
+        <div class="product-box">
+          <div class="product-item">
+            <span class="product-name">初心</span>
+          </div>
+          <div class="product-desc">適合希望修復關係、拉近距離、重新建立連結的人。</div>
+          <div class="product-sep"></div>
+          <div class="product-item">
+            <span style="font-size:12px;color:#c080d0;">🌸 若想增加桃花魅力與互動能量，也可搭配</span>
+            <span class="product-name" style="font-size:13px;">心動</span>
+          </div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="resetCards()">↩ 重新選牌</span>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section" id="ctaSection">
+    <div class="cta-card">
+      <p class="cta-title">想進一步了解更多？</p>
+      <div class="cta-list">
+        ✨ 對方目前的真實想法<br>
+        ✨ 關係卡點在哪裡<br>
+        ✨ 未來三個月感情發展
+      </div>
+      <a class="btn-primary" href="https://lin.ee/n9xhrPq" target="_blank">
+        💜 預約個人占卜解析
+      </a>
+      <a class="btn-secondary" href="https://shopee.tw/nini10123?categoryId=100643&entryPoint=ShopByPDP&itemId=25944821904" target="_blank">
+        🛍 魔法商品傳送門
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    ✦ 以直覺為引，以牌為鏡 ✦
+  </div>
+
+</div>
+
+<script>
+  // Bubbles
+  (function() {
+    const container = document.getElementById('bubblesContainer');
+    const bubbles = [
+      {w:55,l:8,delay:0,dur:14},
+      {w:30,l:20,delay:3,dur:11},
+      {w:70,l:55,delay:1.5,dur:17},
+      {w:25,l:75,delay:5,dur:10},
+      {w:45,l:88,delay:2.5,dur:15},
+      {w:18,l:35,delay:7,dur:9},
+      {w:60,l:45,delay:4,dur:18},
+      {w:22,l:65,delay:8.5,dur:12},
+      {w:38,l:5,delay:6,dur:16},
+      {w:28,l:92,delay:9,dur:13},
+    ];
+    bubbles.forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'bubble-float';
+      el.style.cssText = `width:${b.w}px;height:${b.w}px;left:${b.l}%;animation-delay:${b.delay}s;animation-duration:${b.dur}s;`;
+      container.appendChild(el);
+    });
+  })();
+
+  let selectedCard = null;
+
+  function selectCard(id) {
+    if (selectedCard === id) return;
+
+    // Flip all cards back
+    ['A','B','C'].forEach(c => {
+      document.getElementById('card'+c).classList.remove('flipped');
+      document.getElementById('panel'+c).classList.remove('visible');
+    });
+
+    selectedCard = id;
+    document.getElementById('card'+id).classList.add('flipped');
+
+    setTimeout(() => {
+      const panel = document.getElementById('panel'+id);
+      panel.classList.add('visible');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 400);
+  }
+
+  function resetCards() {
+    ['A','B','C'].forEach(c => {
+      document.getElementById('card'+c).classList.remove('flipped');
+      document.getElementById('panel'+c).classList.remove('visible');
+    });
+    selectedCard = null;
+    document.querySelector('.cards-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
