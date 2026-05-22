@@ -1,0 +1,197 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Serif+TC:wght@300;400&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --pink-50:#FDF2F8;--pink-100:#F9D8ED;--pink-200:#F3B0D9;--pink-400:#D4537E;
+    --purple-50:#F5F0FF;--purple-100:#E8D8FF;--purple-200:#D0B3FF;--purple-400:#9B6FD4;--purple-600:#6B42A8;
+    --gold:#C9A87C;--gold-light:#F0E6D3;
+  }
+  body{background:transparent;font-family:'Noto Serif TC',serif}
+  .wrap{padding:2rem 1.2rem 3rem;max-width:400px;margin:0 auto}
+  .header{text-align:center;margin-bottom:2rem}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:4px;color:#9B7BB8;text-transform:uppercase;margin-bottom:.5rem}
+  .title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:#6B42A8;letter-spacing:1px;line-height:1.3}
+  .subtitle{font-size:12px;color:#B89FCC;letter-spacing:2px;margin-top:.5rem}
+  .divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,#C9A87C,transparent);margin:1rem auto}
+  .pick-label{text-align:center;font-size:13px;color:#9B7BB8;letter-spacing:1px;margin-bottom:1.5rem}
+  .cards-row{display:flex;gap:1rem;justify-content:center;margin-bottom:2rem}
+  .card-btn{
+    flex:1;max-width:155px;border:none;background:none;cursor:pointer;padding:0;
+    transition:transform .3s ease,filter .3s ease
+  }
+  .card-btn:hover .card-face{transform:translateY(-6px);filter:brightness(1.04)}
+  .card-face{
+    background:linear-gradient(160deg,#F5EEFF 0%,#FDF2F8 50%,#F0E8FF 100%);
+    border-radius:14px;border:1px solid #DFD0F0;
+    padding:1.4rem .9rem 1.2rem;
+    text-align:center;
+    transition:transform .3s ease,filter .3s ease;
+    position:relative;overflow:hidden;
+    min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:space-between
+  }
+  .card-face::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:linear-gradient(90deg,#C9A87C,#D4B8FF,#C9A87C)
+  }
+  .card-letter{
+    font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;
+    color:#9B6FD4;line-height:1;margin-bottom:.4rem
+  }
+  .card-ornament{font-size:28px;margin:.3rem 0}
+  .card-tag{font-size:11px;letter-spacing:2px;color:#B89FCC;margin-top:.5rem}
+  .card-name-preview{font-size:10px;color:#C9A87C;margin-top:.4rem;font-style:italic}
+  .back-pattern{
+    position:absolute;inset:0;opacity:.06;
+    background-image:radial-gradient(circle,#9B6FD4 1px,transparent 1px);
+    background-size:18px 18px
+  }
+  .result{display:none;animation:fadeUp .6s ease both}
+  .result.show{display:block}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .result-card{
+    background:linear-gradient(160deg,#F8F2FF 0%,#FEF6FB 100%);
+    border-radius:18px;border:1px solid #E8D8F0;
+    padding:1.8rem 1.4rem;position:relative;overflow:hidden
+  }
+  .result-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,#C9A87C,#D4B8FF,#F4A0C0,#C9A87C)
+  }
+  .result-header{text-align:center;margin-bottom:1.2rem}
+  .result-option{font-size:11px;letter-spacing:3px;color:#C9A87C;margin-bottom:.4rem}
+  .result-card-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:#6B42A8;line-height:1.2}
+  .result-emoji{font-size:22px;margin:.4rem 0}
+  .result-desc{
+    font-size:14px;line-height:1.9;color:#4A3560;
+    border-left:2px solid #DFD0F0;padding-left:1rem;margin:1.2rem 0
+  }
+  .section-title{
+    font-size:11px;letter-spacing:2px;color:#9B7BB8;margin:1.2rem 0 .6rem;
+    display:flex;align-items:center;gap:.5rem
+  }
+  .section-title::after{content:'';flex:1;height:.5px;background:#E8D8F0}
+  .tips{list-style:none;padding:0}
+  .tips li{
+    font-size:13px;color:#4A3560;padding:.45rem 0 .45rem 1.4rem;
+    position:relative;border-bottom:.5px solid #F0E8F8;line-height:1.7
+  }
+  .tips li:last-child{border-bottom:none}
+  .tips li::before{content:'✦';position:absolute;left:0;color:#C9A87C;font-size:9px;top:.6rem}
+  .caution{
+    background:#FFF5F8;border-radius:10px;border:.5px solid #F4C0D1;
+    padding:.9rem 1rem;font-size:13px;color:#7A3050;line-height:1.7;margin:1rem 0
+  }
+  .message-box{
+    background:linear-gradient(135deg,#F0E8FF,#FDE8F2);
+    border-radius:12px;padding:1rem 1.1rem;margin-top:1rem;text-align:center
+  }
+  .message-box p{font-size:13px;color:#6B42A8;line-height:1.8;font-style:italic}
+  .reset-btn{
+    display:block;width:100%;margin-top:1.8rem;
+    background:none;border:.5px solid #D0B3FF;border-radius:30px;
+    padding:.75rem;font-family:'Noto Serif TC',serif;font-size:13px;
+    color:#9B6FD4;letter-spacing:2px;cursor:pointer;
+    transition:background .2s,color .2s
+  }
+  .reset-btn:hover{background:#F5EEFF;color:#6B42A8}
+</style>
+
+<div class="wrap">
+  <div class="header">
+    <div class="logo">Mita Tarot</div>
+    <div class="title">明日運勢</div>
+    <div class="subtitle">選擇一張牌，感受宇宙的指引</div>
+    <div class="divider"></div>
+  </div>
+
+  <div id="select-area">
+    <p class="pick-label">✦ 閉上眼睛，感受內心的呼喚 ✦</p>
+    <div class="cards-row">
+      <button class="card-btn" onclick="reveal('A')">
+        <div class="card-face">
+          <div class="back-pattern"></div>
+          <div class="card-letter">A</div>
+          <div class="card-ornament">🌟</div>
+          <div class="card-tag">點擊翻牌</div>
+        </div>
+      </button>
+      <button class="card-btn" onclick="reveal('B')">
+        <div class="card-face">
+          <div class="back-pattern"></div>
+          <div class="card-letter">B</div>
+          <div class="card-ornament">🌙</div>
+          <div class="card-tag">點擊翻牌</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <div id="result-A" class="result">
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-option">選項 A</div>
+        <div class="result-card-name">權杖侍者</div>
+        <div class="result-emoji">🔥</div>
+      </div>
+      <div class="result-desc">
+        明天是充滿新想法、新機會的一天。你可能突然想做某件事、收到新的消息，或對某個人產生好奇心。這張牌帶著行動力與探索精神，代表宇宙正在鼓勵你跨出舒適圈。
+      </div>
+      <div class="section-title">✨ 明日提醒</div>
+      <ul class="tips">
+        <li>想做的事先開始，不要等到完全準備好</li>
+        <li>留意訊息通知、電話或新的邀約</li>
+        <li>保持開放的心態，可能有意外驚喜</li>
+      </ul>
+      <div class="caution">
+        ⚠️ 容易三分鐘熱度，想到很多卻沒有真正執行。
+      </div>
+      <div class="message-box">
+        <p>💌 宇宙訊息<br>「你的熱情正在為你開路，勇敢踏出第一步。」</p>
+      </div>
+      <button class="reset-btn" onclick="reset()">↺ 重新抽牌</button>
+    </div>
+  </div>
+
+  <div id="result-B" class="result">
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-option">選項 B</div>
+        <div class="result-card-name">聖杯六</div>
+        <div class="result-emoji">🌷</div>
+      </div>
+      <div class="result-desc">
+        明天的能量偏向溫暖與懷舊。可能會想起某個人、某段回憶，或與老朋友、舊同事重新聯繫。有些人則會收到來自過去的人事物消息。這張牌也代表被照顧、被關心的能量，明天適合放慢腳步感受生活中的小幸福。
+      </div>
+      <div class="section-title">✨ 明日提醒</div>
+      <ul class="tips">
+        <li>主動聯絡想念的人</li>
+        <li>回顧過往經驗，會得到新的答案</li>
+        <li>接受別人的善意與幫助</li>
+      </ul>
+      <div class="caution">
+        ⚠️ 不要一直沉浸在過去，而忽略當下正在發生的美好。
+      </div>
+      <div class="message-box">
+        <p>💌 宇宙訊息<br>「過去帶來的不是遺憾，而是成長後的禮物。」</p>
+      </div>
+      <button class="reset-btn" onclick="reset()">↺ 重新抽牌</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function reveal(choice){
+  document.getElementById('select-area').style.display='none';
+  var el=document.getElementById('result-'+choice);
+  el.classList.add('show');
+}
+function reset(){
+  document.getElementById('select-area').style.display='block';
+  ['A','B'].forEach(function(c){
+    var el=document.getElementById('result-'+c);
+    el.classList.remove('show');
+    el.style.display='none';
+  });
+}
+</script>
