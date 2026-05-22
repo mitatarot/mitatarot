@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集光悠宅｜漫遊集集旅遊地圖</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --green-deep:#3d5c36;
+    --green-mid:#5a7a52;
+    --green-light:#8aad7e;
+    --green-pale:#d4e8cc;
+    --green-mist:#eef5eb;
+    --green-faint:#f6faf4;
+    --brown:#7a5c3a;
+    --text-dark:#2a3228;
+    --text-mid:#4a5e45;
+    --text-light:#7a9270;
+    --border:#c8dcc0;
+    --white:#ffffff;
+  }
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--green-faint);color:var(--text-dark);line-height:1.6}
+
+  /* HERO */
+  .hero{background:linear-gradient(160deg,#3d5c36 0%,#4e7244 50%,#2d4428 100%);padding:3.5rem 1.5rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .hero-logo{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:30px;padding:6px 18px;margin-bottom:1.5rem}
+  .hero-logo span{color:rgba(255,255,255,0.85);font-size:13px;letter-spacing:1px}
+  .hero h1{font-family:'Noto Serif TC',serif;color:#fff;font-size:2.4rem;font-weight:700;margin-bottom:.4rem;text-shadow:0 2px 12px rgba(0,0,0,0.2)}
+  .hero-sub{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:1.8rem;letter-spacing:2px}
+  .hero-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .hero-chip{background:rgba(255,255,255,0.13);border:0.5px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.88);font-size:12px;padding:6px 14px;border-radius:20px}
+
+  /* NAV FILTER */
+  .nav-filter{background:var(--white);border-bottom:1px solid var(--border);padding:.85rem 1.5rem;position:sticky;top:0;z-index:100;display:flex;gap:8px;flex-wrap:wrap;align-items:center;box-shadow:0 2px 8px rgba(61,92,54,0.08)}
+  .nav-label{font-size:12px;color:var(--text-light);margin-right:2px;white-space:nowrap}
+  .filter-btn{font-family:'Noto Sans TC',sans-serif;font-size:12px;padding:6px 16px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--text-mid);cursor:pointer;transition:all .2s;white-space:nowrap}
+  .filter-btn:hover{background:var(--green-mist);border-color:var(--green-light)}
+  .filter-btn.active{background:var(--green-deep);color:#fff;border-color:var(--green-deep)}
+
+  /* MAIN */
+  .main{max-width:900px;margin:0 auto;padding:2rem 1rem}
+
+  /* SECTION HEADER */
+  .section-header{display:flex;align-items:center;gap:12px;margin:2rem 0 1.2rem}
+  .section-tag{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:700;color:var(--white);padding:4px 14px;border-radius:20px;white-space:nowrap}
+  .section-tag.local{background:var(--green-deep)}
+  .section-tag.nearby20{background:#3b6d8f}
+  .section-tag.nearby30{background:#6d4a8f}
+  .section-line{flex:1;height:1px;background:var(--border)}
+  .section-count{font-size:12px;color:var(--text-light);white-space:nowrap}
+
+  /* CARDS GRID */
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
+
+  /* CARD */
+  .spot-card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:box-shadow .25s,transform .2s;cursor:pointer}
+  .spot-card:hover{box-shadow:0 6px 24px rgba(61,92,54,0.12);transform:translateY(-2px)}
+  .spot-card.expanded .card-expand-icon{transform:rotate(180deg)}
+  .spot-card.expanded .card-details{display:block}
+
+  /* CARD IMAGE */
+  .card-img-wrap{position:relative;height:180px;overflow:hidden;background:var(--green-pale)}
+  .card-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+  .spot-card:hover .card-img-wrap img{transform:scale(1.04)}
+  .card-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--green-pale),var(--green-mist));font-size:3rem}
+  .card-dist-badge{position:absolute;top:10px;left:10px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:12px;backdrop-filter:blur(4px)}
+  .dist-local{background:rgba(61,92,54,0.85);color:#fff}
+  .dist-20{background:rgba(59,109,143,0.85);color:#fff}
+  .dist-30{background:rgba(109,74,143,0.85);color:#fff}
+  .card-rating{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.6);color:#fff;font-size:11px;padding:3px 8px;border-radius:10px;display:flex;align-items:center;gap:3px}
+
+  /* CARD BODY */
+  .card-body{padding:1rem 1.1rem}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem}
+  .card-name{font-family:'Noto Serif TC',serif;font-size:1.05rem;font-weight:700;color:var(--text-dark)}
+  .card-time{font-size:11px;color:var(--text-light);background:var(--green-mist);padding:2px 8px;border-radius:10px;white-space:nowrap;border:0.5px solid var(--green-pale)}
+  .card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.65rem}
+  .tag{font-size:11px;padding:2px 8px;border-radius:10px;border:0.5px solid transparent}
+  .tag-nature{background:#eaf3de;color:#3B6D11;border-color:#c5dbb8}
+  .tag-culture{background:#e6f1fb;color:#185FA5;border-color:#b5d4f4}
+  .tag-kids{background:#faeeda;color:#854F0B;border-color:#f0c97a}
+  .tag-food{background:#faece7;color:#993C1D;border-color:#f0c4b3}
+  .tag-art{background:#eeedfe;color:#534AB7;border-color:#cecbf6}
+  .card-desc{font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:.6rem}
+  .card-footer-row{display:flex;align-items:center;justify-content:space-between}
+  .card-crowd{font-size:11.5px;color:var(--text-light);flex:1;margin-right:8px}
+
+  /* EXPAND ICON */
+  .card-expand-btn{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--green-mid);cursor:pointer;transition:color .2s;flex-shrink:0}
+  .card-expand-icon{font-size:13px;transition:transform .25s;display:inline-block}
+
+  /* CARD DETAILS (expanded) */
+  .card-details{display:none;border-top:1px solid var(--border);padding:1rem 1.1rem;background:var(--green-faint)}
+  .tip-block{background:var(--white);border:1px solid var(--green-pale);border-radius:10px;padding:.8rem 1rem;margin-bottom:.8rem}
+  .tip-block-label{font-size:11px;font-weight:500;color:var(--green-deep);margin-bottom:.35rem;display:flex;align-items:center;gap:5px}
+  .tip-block p{font-size:12.5px;color:var(--text-mid);line-height:1.7}
+
+  /* MAP / QR ROW */
+  .map-qr-row{display:flex;align-items:center;gap:12px}
+  .map-link-btn{display:inline-flex;align-items:center;gap:6px;background:var(--green-deep);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:10px;text-decoration:none;transition:background .2s;flex-shrink:0}
+  .map-link-btn:hover{background:var(--green-mid)}
+  .map-link-btn svg{width:14px;height:14px;fill:currentColor}
+  .qr-wrap{flex-shrink:0}
+  .qr-wrap canvas, .qr-wrap img{border-radius:6px;border:1px solid var(--border)}
+  .addr-text{font-size:11.5px;color:var(--text-mid);line-height:1.6;flex:1}
+
+  /* EMPTY */
+  .empty-state{text-align:center;padding:4rem 1rem;color:var(--text-light);font-size:14px}
+
+  /* FOOTER */
+  .footer{text-align:center;padding:2.5rem 1rem;color:var(--text-light);font-size:12.5px;border-top:1px solid var(--border);margin-top:2rem;background:var(--white)}
+  .footer strong{color:var(--green-deep)}
+
+  @media(max-width:600px){
+    .hero h1{font-size:1.8rem}
+    .cards-grid{grid-template-columns:1fr}
+    .map-qr-row{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-logo">
+    <span>🏡 集光悠宅 J.K.U.house</span>
+  </div>
+  <h1>漫遊集集</h1>
+  <div class="hero-sub">景點 · 美食 · 親子景點地圖</div>
+  <div class="hero-chips">
+    <span class="hero-chip">📍 在地景點推薦</span>
+    <span class="hero-chip">🍽️ 在地美食指南</span>
+    <span class="hero-chip">❤️ 親子景點精選</span>
+  </div>
+</div>
+
+<div class="nav-filter">
+  <span class="nav-label">篩選：</span>
+  <button class="filter-btn active" data-filter="all">全部 (18)</button>
+  <button class="filter-btn" data-filter="local">集集本地</button>
+  <button class="filter-btn" data-filter="nearby20">約20分車程</button>
+  <button class="filter-btn" data-filter="nearby30">約30分車程</button>
+  <button class="filter-btn" data-filter="kids">👶 親子推薦</button>
+  <button class="filter-btn" data-filter="nature">🌿 自然景觀</button>
+  <button class="filter-btn" data-filter="culture">🏛️ 文化歷史</button>
+</div>
+
+<div class="main" id="main-content"></div>
+
+<div class="footer">
+  <strong>集光悠宅 J.K.U.house</strong>・包棟民宿<br>
+  <span>跟著集光悠宅，一起慢慢旅行 ♡</span><br><br>
+  <span style="font-size:11px;opacity:.7">點擊景點卡片展開詳情 · 地圖連結直達 Google Maps · QR Code 可手機掃描導航</span>
+</div>
+
+<script>
+const spots = [
+  {
+    id:1, name:"集集火車站", dist:"local",
+    time:"30～60分鐘", rating:4.2,
+    tags:["culture","kids"], tagLabels:["文化歷史","情侶/親子"],
+    desc:"臺灣少數保存完整的日式木造火車站，建於日治時期，充滿懷舊氛圍。車站周邊商圈熱鬧，步行即可品嚐在地美食、購買特色伴手禮，並串聯綠色隧道、明新書院等熱門景點。",
+    tip:"建議傍晚時分前往散步拍照，感受小鎮悠閒氛圍，再到附近品嚐在地小吃，享受愜意的慢旅行時光。",
+    crowd:"情侶、親子家庭、鐵道迷、攝影愛好者",
+    addr:"南投縣集集鎮民生路1號",
+    mapUrl:"https://maps.app.goo.gl/XUa5vCF9bXcaqSWY6",
+    placeId:"ChIJUZEbvJMsaTQRKCCSuiKnaDU",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Jiji_station.jpg/1280px-Jiji_station.jpg",
+    emoji:"🚂"
+  },
+  {
+    id:2, name:"集集綠色隧道", dist:"local",
+    time:"45～60分鐘", rating:4.4,
+    tags:["nature","kids"], tagLabels:["自然景觀","全家適合"],
+    desc:"全長約4.5公里，兩旁茂密樟樹枝葉交錯形成天然綠色拱廊。無論開車、騎自行車或悠閒散步，都能感受到被綠意包圍的療癒氛圍，春夏時節綠蔭更加濃密。",
+    tip:"建議於清晨或傍晚前往，氣溫舒適且光線柔和，非常適合散步、騎乘自行車與拍攝美麗照片。",
+    crowd:"情侶、親子家庭、自行車愛好者、攝影愛好者",
+    addr:"南投縣集集鎮集集火車站附近（往名間方向）",
+    mapUrl:"https://maps.app.goo.gl/GHpzumFRUcjY4CNPA",
+    placeId:"ChIJ0ZUbvJMsaTQReWqnH53U7qc",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Jiji_Green_Tunnel%2C_Nantou_County_%2820131026092636%29.jpg/1280px-Jiji_Green_Tunnel%2C_Nantou_County_%2820131026092636%29.jpg",
+    emoji:"🌿"
+  },
+  {
+    id:3, name:"集元果觀光工廠", dist:"local",
+    time:"60～90分鐘", rating:4.2,
+    tags:["kids","food"], tagLabels:["親子互動","DIY體驗"],
+    desc:"以「集集山蕉文化」為主題，種植超過百種香蕉品種，可體驗香蕉相關產品製作。設有山蕉生態園區、親子遊戲空間及DIY體驗區，是寓教於樂的熱門景點。",
+    tip:"建議安排上午或下午半日遊，搭配集集綠色隧道與集集車站，體驗最具代表性的山蕉文化與在地風情。",
+    crowd:"親子家庭、情侶、團體旅遊、自然生態愛好者",
+    addr:"南投縣集集鎮富山村大坪巷1號",
+    mapUrl:"https://maps.app.goo.gl/HKmhWHF3L6kT6DXu8",
+    placeId:"ChIJ2dFkhnsraTQR5PAEvA_aWyE",
+    photo:"https://images.unsplash.com/photo-1605025173767-afe2e72d6ab6?w=800&q=80",
+    emoji:"🍌"
+  },
+  {
+    id:4, name:"集集武昌宮", dist:"local",
+    time:"30～60分鐘", rating:4.4,
+    tags:["culture"], tagLabels:["文化歷史","宗教信仰"],
+    desc:"主祀玄天上帝，原廟宇於1999年九二一大地震中受損傾斜，因而保留為珍貴的地震紀念遺址。可近距離觀看傾斜的舊廟建築，感受大自然力量與重建精神。",
+    tip:"可與集集車站、明新書院安排成半日文化散步行程，除了感受地方信仰文化，也能了解九二一地震帶給臺灣的重要歷史記憶。",
+    crowd:"親子家庭、歷史文化愛好者、宗教信仰人士、團體旅遊",
+    addr:"南投縣集集鎮八張街181號",
+    mapUrl:"https://maps.app.goo.gl/NVnmzrCLJpJYv5EV9",
+    placeId:"ChIJfw8Bf48saTQRT8EKB2GxXiw",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Wuchang_Temple_Jiji.jpg/1280px-Wuchang_Temple_Jiji.jpg",
+    emoji:"🛕"
+  },
+  {
+    id:5, name:"軍史公園", dist:"local",
+    time:"20～40分鐘", rating:4.0,
+    tags:["culture","kids"], tagLabels:["軍事歷史","親子"],
+    desc:"位於集集火車站附近，展示退役戰車、戰鬥機、火砲及軍用車輛，採開放式展示。環境寬敞，鄰近集集市區與鐵道景點，非常適合親子同遊與拍照留念。",
+    tip:"可與集集車站、集集綠色隧道安排同一路線順遊，輕鬆體驗鐵道文化與軍事歷史，適合作為半日遊中的休憩景點。",
+    crowd:"親子家庭、軍事迷、學生團體、攝影愛好者",
+    addr:"南投縣集集鎮民權路",
+    mapUrl:"https://maps.app.goo.gl/WuKk6E8eDV7qvXLa7",
+    placeId:"ChIJhUucKJssaTQR7Mjlp7pUx9o",
+    photo:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
+    emoji:"✈️"
+  },
+  {
+    id:6, name:"保育教育館", dist:"local",
+    time:"30～60分鐘", rating:4.6,
+    tags:["nature","kids"], tagLabels:["生態教育","親子學習"],
+    desc:"結合自然生態、環境教育與保育推廣，透過豐富的圖文解說、標本展示及互動設施，讓遊客認識臺灣在地動植物生態與自然保育的重要性。",
+    tip:"非常適合親子半日遊行程，可搭配集元果觀光工廠、集集綠色隧道一起遊玩，讓孩子在旅途中寓教於樂，深入認識自然與生態保育。",
+    crowd:"親子家庭、學生團體、自然生態愛好者",
+    addr:"南投縣集集鎮民生東路1號",
+    mapUrl:"https://maps.app.goo.gl/x3YAmcVxRMrJUV5q8",
+    placeId:"ChIJm1HZL0UtaTQR1CoKGwRYLFc",
+    photo:"https://images.unsplash.com/photo-1503480207415-fdddcc21d5fc?w=800&q=80",
+    emoji:"🦋"
+  },
+  {
+    id:7, name:"明新書院", dist:"local",
+    time:"30～45分鐘", rating:4.1,
+    tags:["culture"], tagLabels:["文化古蹟","歷史建築"],
+    desc:"創建於清光緒八年（1882年），是南投縣歷史悠久的傳統書院之一，融合閩南傳統建築特色，古色古香的庭院展現濃厚人文氣息與歷史風貌。",
+    tip:"可搭配集集車站、武昌宮一起安排文化散步路線，深入認識集集的人文歷史與傳統建築之美，享受悠閒且充滿文化氣息的慢旅行時光。",
+    crowd:"歷史文化愛好者、親子家庭、學生團體、攝影愛好者",
+    addr:"南投縣集集鎮永昌村東昌巷4號",
+    mapUrl:"https://maps.app.goo.gl/B5vVbqyFBkj2RbGF7",
+    placeId:"ChIJqck7NIMsaTQRdjaUSXMaNh8",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Mingxin_Academy_in_Jiji%2C_Nantou%2C_Taiwan.jpg/1280px-Mingxin_Academy_in_Jiji%2C_Nantou%2C_Taiwan.jpg",
+    emoji:"📚"
+  },
+  {
+    id:8, name:"集集特技村", dist:"local",
+    time:"60～120分鐘", rating:4.4,
+    tags:["kids"], tagLabels:["特技表演","親子娛樂"],
+    desc:"以特技表演與親子娛樂為主題，結合雜技、特技秀、互動體驗及戶外遊樂設施，讓遊客在歡樂氣氛中感受精彩刺激的表演魅力，不定期推出各式活動。",
+    tip:"非常適合安排親子半日遊，可搭配集元果觀光工廠、集集綠色隧道一起遊玩，讓孩子盡情放電，大人也能享受輕鬆愉快的旅遊時光。",
+    crowd:"親子家庭、學生團體、朋友出遊、團體旅遊",
+    addr:"南投縣集集鎮吉路路26巷15-1號",
+    mapUrl:"https://maps.app.goo.gl/GHpzumFRUcjY4CNPA",
+    placeId:"ChIJI5H8R5QsaTQRruP83ixhuo4",
+    photo:"https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=800&q=80",
+    emoji:"🎪"
+  },
+  {
+    id:9, name:"添興窯陶藝村", dist:"local",
+    time:"60～90分鐘", rating:4.3,
+    tags:["art","culture"], tagLabels:["陶藝文化","DIY體驗"],
+    desc:"位於集集綠色隧道旁，創立於1955年，是臺灣現存歷史最悠久且仍持續燒陶生產的蛇窯之一。保留老蛇窯、陶藝文物展示區，可親手體驗捏陶、拉坯等DIY活動。",
+    tip:"建議與集集綠色隧道安排順遊行程，先漫步於綠蔭隧道，再到添興窯體驗陶藝創作，感受集集慢活的人文風情與在地工藝魅力。",
+    crowd:"親子家庭、情侶、藝術愛好者、文化旅遊旅客",
+    addr:"南投縣集集鎮田寮村棗林路10號",
+    mapUrl:"https://maps.app.goo.gl/aNjAJ7dPXKJFq5jX7",
+    placeId:"ChIJGZGXth0taTQR2W_iTYnvIac",
+    photo:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
+    emoji:"🏺"
+  },
+  {
+    id:10, name:"鹿芝谷", dist:"nearby20",
+    time:"60～90分鐘", rating:4.8,
+    tags:["nature","kids"], tagLabels:["動物互動","親子景點"],
+    desc:"以梅花鹿互動體驗為主題，可近距離餵食、觀察鹿群，感受與動物親近的樂趣。園區環境綠意盎然，規劃有步道、拍照打卡區及景觀空間，是近年南投熱門親子景點。",
+    tip:"建議安排上午或下午半日遊行程，可搭配紫南宮或車埕景區一起遊玩，享受與梅花鹿互動的療癒時光，留下美好的旅行回憶。",
+    crowd:"親子家庭、情侶、動物愛好者、攝影愛好者",
+    addr:"南投縣鹿谷鄉中正路二段377號",
+    mapUrl:"https://maps.app.goo.gl/JNTSHvNhTJJJRK8J9",
+    placeId:"ChIJk-xswJ3TbjQR5sakG3cG7TU",
+    photo:"https://images.unsplash.com/photo-1560713781-d00376d27c37?w=800&q=80",
+    emoji:"🦌"
+  },
+  {
+    id:11, name:"竹山紫南宮", dist:"nearby20",
+    time:"45～90分鐘", rating:4.7,
+    tags:["culture"], tagLabels:["宗教信仰","祈福聖地"],
+    desc:"南投最知名的土地公廟，以「借發財金」聞名全臺，每年吸引大量信眾前來參拜祈福。廟區環境寬敞整潔，設有知名的金雞展示區及特色造景，是南投必訪人氣景點。",
+    tip:"建議上午前往參拜祈福，順道品嚐竹山在地小吃，再搭配鹿芝谷或車埕景區安排半日遊行程，輕鬆體驗南投的人文風情與山城魅力。",
+    crowd:"親子家庭、情侶、長輩、宗教文化愛好者",
+    addr:"南投縣竹山鎮社寮里大公街40號",
+    mapUrl:"https://maps.app.goo.gl/NfHgJKbsA5xmpXgF7",
+    placeId:"ChIJiREHEVItaTQRCw4OxSRg5Lo",
+    photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Zinan_Temple_Zhushan.jpg/1280px-Zinan_Temple_Zhushan.jpg",
+    emoji:"🏮"
+  },
+  {
+    id:12, name:"名間親子生態園區", dist:"nearby20",
+    time:"60～120分鐘", rating:4.5,
+    tags:["kids","nature"], tagLabels:["親子公園","免費景點"],
+    desc:"南投首座大型親子共融公園，占地約2.6公頃，結合自然生態、休閒綠地與兒童遊樂設施。最具代表性的設施是高達5公尺的彩虹溜滑梯，另有沙坑、鞦韆、攀爬設施、生態池。",
+    tip:"非常適合親子半日遊行程，可搭配竹山紫南宮、鹿芝谷或集集車站一起遊玩。孩子能在園區盡情奔跑放電，大人則可享受綠意環境與悠閒的山城時光。",
+    crowd:"親子家庭、幼童、學生團體、戶外活動愛好者",
+    addr:"南投縣名間鄉中山村章南路256號",
+    mapUrl:"https://maps.app.goo.gl/oPHXVMTvUerPG4PL6",
+    placeId:"ChIJjfM-pkgzaTQRSw29c4boAb8",
+    photo:"https://images.unsplash.com/photo-1575783970733-1aaedde1db74?w=800&q=80",
+    emoji:"🎠"
+  },
+  {
+    id:13, name:"車籠埔斷層保存園區", dist:"nearby20",
+    time:"60～120分鐘", rating:4.4,
+    tags:["culture","kids"], tagLabels:["地質教育","科學景點"],
+    desc:"保存九二一集集大地震珍貴斷層遺跡的科學教育園區，完整保留世界級的斷層槽溝剖面，設有地質科學館及多項互動展示設施，兼具教育性與趣味性。",
+    tip:"可搭配竹山紫南宮或鹿芝谷一同遊玩，透過實地觀察九二一地震遺跡，不僅能認識臺灣特殊地質環境，也能提升防災意識，是寓教於樂的知性景點。",
+    crowd:"親子家庭、學生團體、自然科學愛好者、地質研究愛好者",
+    addr:"南投縣竹山鎮山崇里集山路二段345號",
+    mapUrl:"https://maps.app.goo.gl/E3t4uMNQ7PsYnHyB6",
+    placeId:"ChIJ4XN7jF_NbjQR0_E22tzTorI",
+    photo:"https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80",
+    emoji:"🌍"
+  },
+  {
+    id:14, name:"車埕木業展示館", dist:"nearby20",
+    time:"60～90分鐘", rating:4.3,
+    tags:["culture","art"], tagLabels:["林業文化","文青必訪"],
+    desc:"位於南投水里車埕聚落，前身為早期木材加工廠，見證了車埕昔日繁盛的林業發展歷史。九二一地震後修復改建，展示臺灣林業發展歷程，結合木工DIY體驗與特色展覽。",
+    tip:"建議可搭配車埕老街、車埕車站及貯木池一起漫遊，欣賞山城湖景與木造建築風光，感受車埕獨有的慢活氛圍與懷舊魅力。",
+    crowd:"親子家庭、情侶、文青旅人、歷史文化愛好者",
+    addr:"南投縣水里鄉車埕村民權巷110-2號",
+    mapUrl:"https://maps.app.goo.gl/8RrpzwLyAuPHPDFJ9",
+    placeId:"ChIJr_pBukQqaTQRiRD38Tr1W-E",
+    photo:"https://images.unsplash.com/photo-1544989164-31dc3c8b4ef3?w=800&q=80",
+    emoji:"🪵"
+  },
+  {
+    id:15, name:"水里蛇窯陶藝文化園區", dist:"nearby20",
+    time:"60～120分鐘", rating:4.1,
+    tags:["art","culture"], tagLabels:["百年蛇窯","陶藝體驗"],
+    desc:"創立於1927年，是臺灣現存歷史最悠久的傳統柴燒蛇窯之一，完整保存百年蛇窯、製陶文物。可親手體驗捏陶、拉坯、彩繪等課程，漫步園區欣賞充滿古樸風情的窯場建築。",
+    tip:"建議可安排與車埕老街、車埕木業展示館一同順遊，體驗木藝與陶藝兩種不同的傳統工藝文化。若時間充裕，也非常推薦參加陶藝DIY課程，親手製作旅行紀念品。",
+    crowd:"親子家庭、情侶、藝術愛好者、文化旅遊旅客",
+    addr:"南投縣水里鄉頂崁村惠遙路16號",
+    mapUrl:"https://maps.app.goo.gl/mqNqbgXeGPDvmhut7",
+    placeId:"ChIJKfVTYsIqaTQR-m7qzRrM3dA",
+    photo:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80",
+    emoji:"🏺"
+  },
+  {
+    id:16, name:"半山夢工廠", dist:"nearby30",
+    time:"2～4小時", rating:4.6,
+    tags:["kids","art"], tagLabels:["室內景點","文創體驗"],
+    desc:"全台規模最大的學旅觀光工廠之一，超過五千坪室內空間。最大亮點是高達30.8公尺的「生命樹」，還設有攀岩牆、垂降體驗、灣島文化館及特色餐飲空間。",
+    tip:"遇到下雨天或天氣炎熱時非常推薦！可搭配星月天空、猴探井天空之橋等周邊景點順遊，不論大人或小朋友都能玩得盡興。",
+    crowd:"親子家庭、情侶、朋友出遊、文創愛好者",
+    addr:"南投市永豐里工業南路6號",
+    mapUrl:"https://maps.app.goo.gl/XtKfWZe8P79hDMun9",
+    placeId:"ChIJ2-KxYnsxaTQRMblmPXUj4dQ",
+    photo:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80",
+    emoji:"🌳"
+  },
+  {
+    id:17, name:"星月天空夜景景觀餐廳", dist:"nearby30",
+    time:"2～3小時", rating:4.6,
+    tags:["food","nature"], tagLabels:["夜景餐廳","約會首選"],
+    desc:"坐落於八卦山脈制高點，可俯瞰南投、彰化及雲林平原。白天欣賞山巒美景，傍晚欣賞夕陽，夜晚則有璀璨夜景。另有可愛動物互動區，可近距離接觸羊駝、小羊等動物。",
+    tip:"建議下午4點左右抵達，可先在園區與動物互動、欣賞夕陽，待夜幕低垂後再享用晚餐與觀賞百萬夜景，一次體驗白天、黃昏與夜晚不同的迷人風貌。",
+    crowd:"情侶約會、親子家庭、朋友聚會、攝影愛好者",
+    addr:"南投市富山村猴探井街146巷200號",
+    mapUrl:"https://maps.app.goo.gl/nBWVt3kxbkaCt1Ry8",
+    placeId:"ChIJZTL9Z-QzaTQRWX-nUMMvkGM",
+    photo:"https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&q=80",
+    emoji:"🌃"
+  },
+  {
+    id:18, name:"九九峰動物樂園", dist:"nearby30",
+    time:"2～4小時", rating:4.4,
+    tags:["kids","nature"], tagLabels:["動物樂園","鳥類主題"],
+    desc:"以鳥類生態與可愛動物互動為主題，擁有上百種鳥類與可愛動物。設有大型天網鳥籠、鸚鵡森林，可與水豚、羊駝、梅花鹿、狐獴及迷你馬等動物互動。",
+    tip:"可搭配半山夢工廠或星月天空景觀餐廳一起規劃一日遊，享受豐富又療癒的南投之旅。建議上午或下午前往最為舒適。",
+    crowd:"親子家庭、情侶、動物愛好者、攝影愛好者",
+    addr:"南投縣草屯鎮富頂路一段726巷99號",
+    mapUrl:"https://maps.app.goo.gl/zWUKVEhWVG7T7YLo6",
+    placeId:"ChIJz870IYwxaTQRMbMQewS3pfg",
+    photo:"https://images.unsplash.com/photo-1452570053594-1b985d6ea890?w=800&q=80",
+    emoji:"🦜"
+  }
+];
+
+const tagMap={nature:"tag-nature",culture:"tag-culture",kids:"tag-kids",food:"tag-food",art:"tag-art"};
+const tagText={nature:"🌿 自然",culture:"🏛️ 文化",kids:"👶 親子",food:"🍜 美食",art:"🎨 藝術"};
+const distClass={local:"dist-local",nearby20:"dist-20",nearby30:"dist-30"};
+const distLabel={local:"集集本地",nearby20:"約20分車程",nearby30:"約30分車程"};
+const sectionTagClass={local:"local",nearby20:"nearby20",nearby30:"nearby30"};
+
+function generateQR(url, canvasId){
+  const el=document.getElementById(canvasId);
+  if(!el)return;
+  QRCode.toCanvas(el,url,{width:64,margin:1,color:{dark:'#3d5c36',light:'#ffffff'}},function(err){
+    if(err)console.warn(err);
+  });
+}
+
+function renderCards(filter){
+  const main=document.getElementById('main-content');
+  main.innerHTML='';
+  const groups={local:[],nearby20:[],nearby30:[]};
+  spots.forEach(s=>{
+    const match=filter==='all'
+      ||(filter==='local'&&s.dist==='local')
+      ||(filter==='nearby20'&&s.dist==='nearby20')
+      ||(filter==='nearby30'&&s.dist==='nearby30')
+      ||(filter==='kids'&&s.tags.includes('kids'))
+      ||(filter==='nature'&&s.tags.includes('nature'))
+      ||(filter==='culture'&&s.tags.includes('culture'));
+    if(match) groups[s.dist].push(s);
+  });
+
+  let total=0;
+  ['local','nearby20','nearby30'].forEach(distKey=>{
+    const arr=groups[distKey];
+    if(!arr.length)return;
+    total+=arr.length;
+
+    // Section header
+    const sh=document.createElement('div');
+    sh.className='section-header';
+    sh.innerHTML=`<span class="section-tag ${sectionTagClass[distKey]}">${distLabel[distKey]}</span><div class="section-line"></div><span class="section-count">${arr.length} 個景點</span>`;
+    main.appendChild(sh);
+
+    // Grid
+    const grid=document.createElement('div');
+    grid.className='cards-grid';
+    arr.forEach(s=>{
+      const card=document.createElement('div');
+      card.className='spot-card';
+      const qrId=`qr-${s.id}`;
+      card.innerHTML=`
+        <div class="card-img-wrap">
+          <img src="${s.photo}" alt="${s.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="card-img-placeholder" style="display:none">${s.emoji}</div>
+          <span class="card-dist-badge ${distClass[s.dist]}">${distLabel[s.dist]}</span>
+          <span class="card-rating">⭐ ${s.rating}</span>
+        </div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-name">${s.name}</span>
+            <span class="card-time">⏱ ${s.time}</span>
+          </div>
+          <div class="card-tags">${s.tags.map((t,i)=>`<span class="tag ${tagMap[t]}">${tagText[t]} ${s.tagLabels[i]||''}</span>`).join('')}</div>
+          <p class="card-desc">${s.desc}</p>
+          <div class="card-footer-row">
+            <span class="card-crowd">👥 ${s.crowd}</span>
+            <span class="card-expand-btn">詳情 <span class="card-expand-icon">▼</span></span>
+          </div>
+        </div>
+        <div class="card-details">
+          <div class="tip-block">
+            <div class="tip-block-label">✦ 集光悠宅推薦</div>
+            <p>${s.tip}</p>
+          </div>
+          <div class="map-qr-row">
+            <a class="map-link-btn" href="${s.mapUrl}" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              Google Maps 導航
+            </a>
+            <div class="addr-text">${s.addr}</div>
+            <div class="qr-wrap"><canvas id="${qrId}"></canvas></div>
+          </div>
+        </div>
+      `;
+
+      // Toggle expand
+      const expandBtn=card.querySelector('.card-expand-btn');
+      const imgWrap=card.querySelector('.card-img-wrap');
+      function toggleCard(){
+        const wasExpanded=card.classList.contains('expanded');
+        card.classList.toggle('expanded');
+        if(!wasExpanded){
+          setTimeout(()=>generateQR(s.mapUrl,qrId),50);
+        }
+      }
+      expandBtn.addEventListener('click',e=>{e.stopPropagation();toggleCard()});
+      imgWrap.addEventListener('click',toggleCard);
+
+      grid.appendChild(card);
+    });
+    main.appendChild(grid);
+  });
+
+  if(!total){
+    main.innerHTML='<div class="empty-state">找不到符合條件的景點</div>';
+  }
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards(btn.dataset.filter);
+  });
+});
+
+renderCards('all');
+</script>
+</body>
+</html>
