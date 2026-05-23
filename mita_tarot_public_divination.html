@@ -1,0 +1,257 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+TC:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Serif TC',serif;background:transparent}
+.page{padding:1.8rem 1.1rem 3rem;max-width:390px;margin:0 auto}
+
+.hd{text-align:center;margin-bottom:1.6rem}
+.hd-badge{display:inline-block;font-size:10px;letter-spacing:3px;color:#B08ECB;border:0.5px solid #D9C4EF;border-radius:20px;padding:3px 14px;margin-bottom:.7rem}
+.hd-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:#6B42A8;letter-spacing:.5px;line-height:1.3}
+.hd-sub{font-size:12px;color:#C8AEDD;letter-spacing:1.5px;margin-top:.4rem}
+.hd-q{font-size:13.5px;color:#5A3A80;line-height:1.8;margin-top:1rem;padding:.85rem 1rem;background:linear-gradient(135deg,#F7F0FF,#FEF3FA);border-radius:14px;border:0.5px solid #E4D2F5}
+.gold-line{width:50px;height:0.5px;background:linear-gradient(90deg,transparent,#C9A87C,transparent);margin:1rem auto}
+
+.pick-hint{text-align:center;font-size:12px;color:#B08ECB;letter-spacing:1.5px;margin-bottom:1.2rem}
+
+/* CARD BUTTONS */
+.cards-wrap{display:flex;gap:.8rem;justify-content:center;margin-bottom:.5rem}
+.card-btn{flex:1;max-width:108px;border:none;background:none;cursor:pointer;padding:0;font-family:'Noto Serif TC',serif}
+.card-inner{
+  border-radius:14px;border:0.5px solid #DFD0F0;
+  background:linear-gradient(160deg,#F5EEFF,#FDF2F8,#F0E8FF);
+  padding:1rem .6rem 1rem;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  min-height:158px;position:relative;overflow:hidden;
+  transition:transform .25s ease
+}
+.card-btn:active .card-inner{transform:scale(.97)}
+.card-inner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C9A87C,#D4B8FF,#F9B8D6,#C9A87C)}
+.card-dots{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,#9B6FD4 1px,transparent 1px);background-size:16px 16px}
+.card-letter{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;color:#9B6FD4;line-height:1;position:relative}
+.card-glyph{font-size:22px;margin:.4rem 0;position:relative}
+.card-hint{font-size:10px;letter-spacing:1.5px;color:#BEA4D8;position:relative}
+
+/* BUBBLE RESULT */
+.result{display:none}
+
+.bubble-wrap{position:relative}
+.bubble{
+  background:linear-gradient(150deg,#F8F2FF 0%,#FEF5FB 100%);
+  border:0.5px solid #E8D5F5;border-radius:22px;
+  padding:1.6rem 1.3rem 1.4rem;
+  position:relative;overflow:hidden
+}
+.bubble::before{content:'';position:absolute;top:0;left:0;right:0;height:3.5px;background:linear-gradient(90deg,#C9A87C,#D4B8FF,#F4A0C0,#C9A87C)}
+/* bubble tail */
+.bubble::after{
+  content:'';position:absolute;bottom:-13px;left:50%;transform:translateX(-50%);
+  width:26px;height:14px;
+  background:linear-gradient(150deg,#F8F2FF,#FEF5FB);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  border-left:0.5px solid #E8D5F5;
+  border-right:0.5px solid #E8D5F5
+}
+
+/* floating orbs */
+.orb{position:absolute;border-radius:50%;opacity:.18;pointer-events:none}
+.orb1{width:80px;height:80px;background:radial-gradient(circle,#D4B8FF,transparent);top:-20px;right:-20px}
+.orb2{width:60px;height:60px;background:radial-gradient(circle,#F9B8D6,transparent);bottom:20px;left:-15px}
+
+.res-badge{display:flex;align-items:center;gap:.5rem;margin-bottom:.9rem}
+.res-opt{font-size:10px;letter-spacing:3px;color:#C9A87C;border:0.5px solid #E8D5B0;border-radius:20px;padding:2px 10px}
+.res-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:#6B42A8}
+
+.res-desc{font-size:13.5px;line-height:1.95;color:#4A3560;padding:.85rem 1rem;background:rgba(255,255,255,.55);border-radius:12px;border-left:2.5px solid #D9C4EF;margin-bottom:1.1rem}
+
+.sec-title{font-size:10.5px;letter-spacing:2px;color:#A078C0;display:flex;align-items:center;gap:.5rem;margin:.9rem 0 .55rem}
+.sec-title::after{content:'';flex:1;height:.5px;background:linear-gradient(90deg,#E8D5F5,transparent)}
+
+/* bubble tips */
+.tip-item{
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:13px;color:#4A3560;line-height:1.75;
+  padding:.5rem .7rem;margin-bottom:.4rem;
+  background:rgba(255,255,255,.6);border-radius:30px;
+  border:0.5px solid #EDE0F8
+}
+.tip-dot{width:7px;height:7px;border-radius:50%;background:#C9A87C;flex-shrink:0;margin-top:.42rem}
+
+.caution-bubble{
+  background:rgba(255,245,248,.8);border:0.5px solid #F4C0D1;border-radius:30px;
+  padding:.7rem 1rem;font-size:13px;color:#7A3050;line-height:1.7;margin:.8rem 0
+}
+
+.msg-box{
+  background:linear-gradient(135deg,#EFE8FF,#FDE8F2);
+  border-radius:16px;padding:1rem 1.1rem;margin:.9rem 0;text-align:center;
+  border:0.5px solid #E0CCFF
+}
+.msg-box p{font-size:13px;color:#6B42A8;line-height:1.85;font-style:italic}
+
+/* recommend bubble */
+.rec-bubble{
+  background:rgba(255,255,255,.7);border:0.5px solid #DDD0F0;border-radius:18px;
+  padding:.9rem 1rem;margin-top:.7rem
+}
+.rec-title{font-size:11px;letter-spacing:1.5px;color:#C9A87C;margin-bottom:.35rem}
+.rec-name{font-size:14.5px;font-weight:500;color:#6B42A8;margin-bottom:.25rem}
+.rec-desc{font-size:12.5px;color:#7A6090;line-height:1.7}
+.rec-link{display:inline-block;margin-top:.6rem;font-size:12px;color:#9B6FD4;text-decoration:none;border:0.5px solid #D0B3FF;border-radius:20px;padding:3px 14px;letter-spacing:.5px}
+
+.links-box{margin-top:1rem;padding:.9rem 1rem;background:rgba(255,255,255,.55);border-radius:14px;border:0.5px solid #DDD0F0}
+.links-box a{display:block;font-size:12.5px;color:#9B6FD4;text-decoration:none;padding:.35rem 0;border-bottom:0.5px solid #F0E5FF;letter-spacing:.3px}
+.links-box a:last-child{border-bottom:none}
+
+.reset-btn{
+  display:block;width:100%;margin-top:1.6rem;
+  background:none;border:0.5px solid #D0B3FF;border-radius:30px;
+  padding:.75rem;font-family:'Noto Serif TC',serif;font-size:13px;
+  color:#9B6FD4;letter-spacing:2px;cursor:pointer
+}
+.reset-btn:hover{background:#F5EEFF}
+</style>
+
+<div class="page">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Mita Tarot 大眾占卜 — 測他最想對你說什麼，選A/B/C牌查看解答</h2>
+
+  <div class="hd">
+    <div class="hd-badge">Mita Tarot</div>
+    <div class="hd-title">大眾占卜</div>
+    <div class="hd-sub">感受宇宙的指引</div>
+    <div class="gold-line"></div>
+    <div class="hd-q">💌 測他鼓起勇氣，最想對你說什麼？<br><span style="font-size:11px;color:#B08ECB;display:block;margin-top:.4rem">（大眾占卜請依自身情況參考）</span></div>
+  </div>
+
+  <!-- CARD SELECT -->
+  <div id="select-area">
+    <p class="pick-hint">✦ 靜心感受，選擇一張牌 ✦</p>
+    <div class="cards-wrap">
+      <button class="card-btn" onclick="showResult('A')">
+        <div class="card-inner">
+          <div class="card-dots"></div>
+          <div class="card-letter">A</div>
+          <div class="card-glyph">🌟</div>
+          <div class="card-hint">翻牌</div>
+        </div>
+      </button>
+      <button class="card-btn" onclick="showResult('B')">
+        <div class="card-inner">
+          <div class="card-dots"></div>
+          <div class="card-letter">B</div>
+          <div class="card-glyph">🌙</div>
+          <div class="card-hint">翻牌</div>
+        </div>
+      </button>
+      <button class="card-btn" onclick="showResult('C')">
+        <div class="card-inner">
+          <div class="card-dots"></div>
+          <div class="card-letter">C</div>
+          <div class="card-glyph">🌸</div>
+          <div class="card-hint">翻牌</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT A -->
+  <div id="result-A" class="result">
+    <div class="bubble-wrap">
+      <div class="bubble">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="res-badge">
+          <span class="res-opt">選項 A</span>
+          <span class="res-name">✨ 他的心聲</span>
+        </div>
+        <div class="res-desc">他最想對你說：<br><strong style="color:#6B42A8;font-weight:500">「其實我一直都知道你的好。」</strong><br><br>你給他的感覺是成熟、溫暖又有包容力的人。只是很多時候，他卡在自己的猶豫與糾結裡，不知道該不該更靠近，也不知道該如何表達內心感受。有些話不是不想說，而是擔心說出口後，關係會因此改變。他其實很欣賞你，也認為你值得被珍惜。</div>
+        <div class="sec-title">💭 他想說</div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「謝謝你曾經對我的好。」</span></div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「其實我一直都有放在心上。」</span></div>
+        <div class="sec-title">✨ 推薦搭配</div>
+        <div class="rec-bubble">
+          <div class="rec-title">心動款</div>
+          <div class="rec-desc">適合希望提升吸引力、增進互動與感情流動的人。讓關係中的溫暖與好感更容易被看見。</div>
+          <a class="rec-link" href="https://shopee.tw/nini10123?categoryId=100643&entryPoint=ShopByPDP&itemId=25944821904" target="_blank">魔法商品傳送門 →</a>
+        </div>
+        <div class="links-box">
+          <a href="https://lin.ee/oVHKqHD" target="_blank">🔮 預約一對一塔羅占卜</a>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetCards()">↺ 重新抽牌</button>
+  </div>
+
+  <!-- RESULT B -->
+  <div id="result-B" class="result">
+    <div class="bubble-wrap">
+      <div class="bubble">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="res-badge">
+          <span class="res-opt">選項 B</span>
+          <span class="res-name">🌙 他的心聲</span>
+        </div>
+        <div class="res-desc">他最想對你說：<br><strong style="color:#6B42A8;font-weight:500">「我其實沒有忘記你。」</strong><br><br>這組牌帶著很濃厚的懷念能量。他時不時會想起過去的互動，也會回憶曾經讓自己開心或感動的片段。只是目前的他對很多事情感到停滯，不知道該前進還是後退，也不確定現在聯絡是否合適。因此即使想念，也容易停留在觀望階段。</div>
+        <div class="sec-title">💭 他想說</div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「那些回憶我都還記得。」</span></div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「我只是還不知道該怎麼靠近你。」</span></div>
+        <div class="sec-title">✨ 推薦搭配</div>
+        <div class="rec-bubble">
+          <div class="rec-title">初心款</div>
+          <div class="rec-desc">適合希望修復關係、重新找回連結與正向能量的人。幫助自己回到最初的信念與期待。</div>
+          <a class="rec-link" href="https://shopee.tw/nini10123?categoryId=100643&entryPoint=ShopByPDP&itemId=25944821904" target="_blank">魔法商品傳送門 →</a>
+        </div>
+        <div class="links-box">
+          <a href="https://lin.ee/oVHKqHD" target="_blank">🔮 預約一對一塔羅占卜</a>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetCards()">↺ 重新抽牌</button>
+  </div>
+
+  <!-- RESULT C -->
+  <div id="result-C" class="result">
+    <div class="bubble-wrap">
+      <div class="bubble">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="res-badge">
+          <span class="res-opt">選項 C</span>
+          <span class="res-name">🌸 他的心聲</span>
+        </div>
+        <div class="res-desc">他最想對你說：<br><strong style="color:#6B42A8;font-weight:500">「有些事情我沒有坦白面對。」</strong><br><br>這組牌顯示他心裡其實存在逃避與不安。可能是現實條件、關係定位，或自己尚未準備好的課題。他知道有些事情沒有處理好，也知道某些行為曾讓你失望。但面對問題時，他選擇了退縮，而不是溝通。</div>
+        <div class="sec-title">💭 他想說</div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「不是完全不在意。」</span></div>
+        <div class="tip-item"><div class="tip-dot"></div><span>「只是我不知道該怎麼面對。」</span></div>
+        <div class="sec-title">✨ 推薦搭配</div>
+        <div class="rec-bubble">
+          <div class="rec-title">澄光淨化款</div>
+          <div class="rec-desc">適合放下內耗、清理負面情緒與混亂能量。當關係卡住時，先把自己的能量狀態調整回來，往往比執著於對方更重要。</div>
+          <a class="rec-link" href="https://shopee.tw/nini10123?categoryId=100643&entryPoint=ShopByPDP&itemId=25944821904" target="_blank">魔法商品傳送門 →</a>
+        </div>
+        <div class="links-box">
+          <a href="https://lin.ee/oVHKqHD" target="_blank">🔮 預約一對一塔羅占卜</a>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetCards()">↺ 重新抽牌</button>
+  </div>
+
+</div>
+
+<script>
+function showResult(c){
+  document.getElementById('select-area').style.display='none';
+  document.getElementById('result-A').style.display='none';
+  document.getElementById('result-B').style.display='none';
+  document.getElementById('result-C').style.display='none';
+  document.getElementById('result-'+c).style.display='block';
+}
+function resetCards(){
+  document.getElementById('select-area').style.display='block';
+  document.getElementById('result-A').style.display='none';
+  document.getElementById('result-B').style.display='none';
+  document.getElementById('result-C').style.display='none';
+}
+</script>
