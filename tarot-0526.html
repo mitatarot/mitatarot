@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>測他明明有感覺，為什麼就是不主動？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-100: #ffdee8;
+    --pink-200: #ffb8cf;
+    --pink-300: #ff90b8;
+    --pink-400: #f568a0;
+    --blue-50:  #eef8ff;
+    --blue-100: #d0eeff;
+    --blue-200: #a8d8f8;
+    --blue-300: #7dc4f5;
+    --blue-400: #4aaee8;
+    --blue-500: #2d96d8;
+    --bg-from:  #e8f4ff;
+    --bg-mid:   #f4eeff;
+    --bg-to:    #fde8f4;
+    --text-deep:  #2a4a7a;
+    --text-mid:   #5572a8;
+    --text-soft:  #8aaad0;
+    --text-light: #b8ccec;
+    --white: #ffffff;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html, body {
+    min-height: 100vh;
+    background: linear-gradient(170deg, #dff0ff 0%, #eee6ff 30%, #fce8f4 65%, #d8edff 100%);
+    font-family: 'Noto Serif TC', serif;
+    color: var(--text-deep);
+    overflow-x: hidden;
+  }
+
+  /* ── Floating bubbles ── */
+  .bubbles-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bbl {
+    position: absolute;
+    border-radius: 50%;
+    animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(105vh) scale(.85); opacity:0; }
+    8%   { opacity:.55; }
+    92%  { opacity:.35; }
+    100% { transform: translateY(-10vh) scale(1.1); opacity:0; }
+  }
+
+  /* ── Page wrap ── */
+  .page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 420px;
+    margin: 0 auto;
+    padding-bottom: 64px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 44px 24px 30px;
+    position: relative;
+  }
+  .hero-glow {
+    position: absolute;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 160px;
+    background: radial-gradient(ellipse, rgba(160,210,255,0.28) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(140,190,255,0.45);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 12px;
+    color: var(--text-mid);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    backdrop-filter: blur(6px);
+  }
+  .hero-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-deep);
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: var(--text-soft);
+    letter-spacing: 0.07em;
+    line-height: 1.9;
+  }
+  .dots-row {
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 18px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .dot:nth-child(1) { background: rgba(255,180,210,0.8); }
+  .dot:nth-child(2) { background: rgba(160,210,255,0.8); }
+  .dot:nth-child(3) { background: rgba(200,175,255,0.8); }
+  .dot:nth-child(4) { background: rgba(160,210,255,0.8); }
+  .dot:nth-child(5) { background: rgba(255,180,210,0.8); }
+
+  /* ── Cards section ── */
+  .cards-section { padding: 0 18px 8px; }
+  .cards-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.09em;
+    margin-bottom: 20px;
+  }
+  .cards-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .card-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    max-width: 112px;
+  }
+
+  /* ── Tarot card 2:3.5 ratio ── */
+  .tarot-card {
+    width: 100%;
+    aspect-ratio: 2 / 3.5;
+    cursor: pointer;
+    transition: transform .18s ease;
+  }
+  .tarot-card:active { transform: scale(.95); }
+
+  .card-inner {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform .7s cubic-bezier(.4,0,.2,1);
+  }
+  .tarot-card.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute; inset: 0;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+  }
+
+  /* back */
+  .card-back-face {
+    background: linear-gradient(145deg, #cce8ff 0%, #b8d8ff 35%, #d0e4ff 65%, #c4daff 100%);
+    border: 1.5px solid rgba(120,180,240,0.45);
+    box-shadow: 0 6px 24px rgba(80,160,230,0.18), inset 0 1px 0 rgba(255,255,255,0.65);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+  .cb-pattern {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 50% 42%, rgba(255,255,255,0.5) 0%, transparent 55%),
+      repeating-linear-gradient(45deg, transparent, transparent 9px, rgba(160,200,255,0.1) 9px, rgba(160,200,255,0.1) 10px),
+      repeating-linear-gradient(-45deg, transparent, transparent 9px, rgba(160,200,255,0.1) 9px, rgba(160,200,255,0.1) 10px);
+  }
+  .cb-border {
+    position: absolute; inset: 8px;
+    border: 1px solid rgba(140,195,255,0.5);
+    border-radius: 10px;
+  }
+  .cb-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.42);
+    border: 1px solid rgba(255,255,255,0.65);
+  }
+  .cb-letter {
+    position: relative; z-index: 2;
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    color: #3a7abf;
+    text-shadow: 0 2px 8px rgba(60,130,220,0.22);
+    line-height: 1;
+  }
+  .cb-hint {
+    position: relative; z-index: 2;
+    font-size: 10px;
+    color: #6aaad8;
+    letter-spacing: 0.1em;
+  }
+
+  /* front */
+  .card-front-face {
+    transform: rotateY(180deg);
+    background: linear-gradient(155deg, #f8fdff 0%, #eef7ff 50%, #e4f2ff 100%);
+    border: 1.5px solid rgba(130,190,240,0.4);
+    box-shadow: 0 6px 24px rgba(80,160,230,0.14), inset 0 1px 0 rgba(255,255,255,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    gap: 6px;
+  }
+  .cf-border {
+    position: absolute; inset: 8px;
+    border: 0.5px solid rgba(130,190,240,0.35);
+    border-radius: 10px;
+  }
+  .cf-cup { font-size: 34px; line-height: 1; filter: drop-shadow(0 3px 5px rgba(80,160,230,0.25)); }
+  .cf-label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #2d7abf;
+    text-align: center;
+    letter-spacing: 0.04em;
+    line-height: 1.45;
+    position: relative; z-index: 1;
+  }
+  .cf-sub {
+    font-size: 9.5px;
+    color: #80b8e0;
+    text-align: center;
+    line-height: 1.55;
+    letter-spacing: 0.03em;
+    position: relative; z-index: 1;
+  }
+
+  .card-tag {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Answer panel ── */
+  .answer-area { padding: 0 18px; margin-top: 26px; }
+
+  .answer-panel { display: none; animation: slideUp .45s cubic-bezier(.4,0,.2,1); }
+  .answer-panel.visible { display: block; }
+
+  @keyframes slideUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .panel-card {
+    background: rgba(255,255,255,0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(150,200,245,0.4);
+    border-radius: 24px;
+    padding: 22px 20px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(80,160,230,0.1);
+  }
+  .panel-card::before {
+    content: '';
+    position: absolute;
+    top: -45px; right: -25px;
+    width: 130px; height: 130px;
+    background: radial-gradient(circle, rgba(180,220,255,0.3), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .panel-card::after {
+    content: '';
+    position: absolute;
+    bottom: -35px; left: -20px;
+    width: 110px; height: 110px;
+    background: radial-gradient(circle, rgba(255,200,225,0.25), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .panel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(90deg, #b8daff, #ffc0d8);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #2a6aaa;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .panel-sec {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-soft);
+    letter-spacing: 0.1em;
+    margin-bottom: 9px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-sec::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(140,190,240,0.4), transparent);
+  }
+
+  .panel-body {
+    font-size: 14px;
+    line-height: 2.05;
+    color: #2a4a7a;
+    letter-spacing: 0.03em;
+    margin-bottom: 14px;
+    position: relative; z-index: 1;
+  }
+
+  .advice-box {
+    background: linear-gradient(135deg, rgba(210,235,255,0.5), rgba(255,220,235,0.45));
+    border: 1px solid rgba(160,205,245,0.4);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 13px;
+    position: relative; z-index: 1;
+  }
+  .advice-box p {
+    font-size: 13.5px;
+    line-height: 1.95;
+    color: #2a5a8a;
+    letter-spacing: 0.03em;
+  }
+
+  .product-box {
+    background: rgba(240,250,255,0.8);
+    border: 1px dashed rgba(140,195,245,0.55);
+    border-radius: 14px;
+    padding: 13px 15px;
+    position: relative; z-index: 1;
+  }
+  .product-name {
+    display: inline-block;
+    background: linear-gradient(90deg, #4aaee8, #f568a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .product-desc {
+    font-size: 12.5px;
+    color: #6a9ac8;
+    line-height: 1.75;
+    margin-top: 2px;
+  }
+  .product-sep {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(140,195,245,0.35), transparent);
+    margin: 7px 0;
+  }
+
+  .reset-link {
+    display: block;
+    text-align: center;
+    margin-top: 13px;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(130,185,230,0.4);
+  }
+
+  /* ── CTA ── */
+  .cta-section { padding: 0 18px; margin-top: 22px; }
+  .cta-card {
+    background: linear-gradient(140deg, rgba(195,228,255,0.7), rgba(255,210,235,0.65));
+    border: 1px solid rgba(160,205,245,0.38);
+    border-radius: 24px;
+    padding: 24px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -30px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(255,255,255,0.5), transparent 65%);
+    border-radius: 50%;
+  }
+  .cta-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -20px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(255,255,255,0.4), transparent 65%);
+    border-radius: 50%;
+  }
+  .cta-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-deep);
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+  }
+  .cta-list {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 2.05;
+    letter-spacing: 0.04em;
+    margin-bottom: 18px;
+    position: relative; z-index: 1;
+  }
+  .btn-main {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #6ac0f0 0%, #f080b8 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(80,160,230,0.3);
+    transition: opacity .2s;
+    position: relative; z-index: 1;
+    margin-bottom: 10px;
+  }
+  .btn-main:active { opacity: .88; transform: scale(.98); }
+  .btn-sub {
+    display: block;
+    width: 100%;
+    padding: 13px 20px;
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(150,200,245,0.5);
+    color: var(--text-mid);
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 13.5px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    transition: opacity .2s;
+    position: relative; z-index: 1;
+  }
+  .btn-sub:active { opacity: .85; transform: scale(.98); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 22px 20px 0;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<div class="bubbles-bg" id="bbg"></div>
+
+<div class="page-wrap">
+
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-badge">🔮 大眾占卜</div>
+    <h1 class="hero-title">測他明明有感覺<br>為什麼就是不主動？</h1>
+    <p class="hero-sub">靜下心來<br>選擇你直覺最有感應的選項</p>
+    <div class="dots-row">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <p class="cards-hint">點選你直覺選中的牌卡 ↓</p>
+    <div class="cards-row">
+
+      <!-- Card A -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardA" onclick="pick('A')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="cb-pattern"></div>
+              <div class="cb-border"></div>
+              <div class="cb-bubble" style="width:22px;height:22px;top:9px;right:9px;"></div>
+              <div class="cb-bubble" style="width:13px;height:13px;bottom:13px;left:11px;"></div>
+              <div class="cb-bubble" style="width:8px;height:8px;bottom:30px;right:16px;"></div>
+              <div class="cb-bubble" style="width:6px;height:6px;top:26px;left:14px;"></div>
+              <div class="cb-letter">A</div>
+              <div class="cb-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="cf-border"></div>
+              <div class="cf-cup">☕</div>
+              <div class="cf-label">暗戀膽怯型</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-tag">選項 A</span>
+      </div>
+
+      <!-- Card B -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardB" onclick="pick('B')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="cb-pattern"></div>
+              <div class="cb-border"></div>
+              <div class="cb-bubble" style="width:18px;height:18px;top:11px;left:10px;"></div>
+              <div class="cb-bubble" style="width:12px;height:12px;bottom:16px;right:13px;"></div>
+              <div class="cb-bubble" style="width:9px;height:9px;top:28px;right:9px;"></div>
+              <div class="cb-bubble" style="width:7px;height:7px;bottom:32px;left:18px;"></div>
+              <div class="cb-letter">B</div>
+              <div class="cb-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="cf-border"></div>
+              <div class="cf-cup">🍵</div>
+              <div class="cf-label">蛻變等待型</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-tag">選項 B</span>
+      </div>
+
+      <!-- Card C -->
+      <div class="card-col">
+        <div class="tarot-card" id="cardC" onclick="pick('C')">
+          <div class="card-inner">
+            <div class="card-face card-back-face">
+              <div class="cb-pattern"></div>
+              <div class="cb-border"></div>
+              <div class="cb-bubble" style="width:20px;height:20px;bottom:11px;right:10px;"></div>
+              <div class="cb-bubble" style="width:11px;height:11px;top:14px;left:12px;"></div>
+              <div class="cb-bubble" style="width:7px;height:7px;top:36px;right:13px;"></div>
+              <div class="cb-bubble" style="width:6px;height:6px;bottom:28px;left:9px;"></div>
+              <div class="cb-letter">C</div>
+              <div class="cb-hint">點我翻牌</div>
+            </div>
+            <div class="card-face card-front-face">
+              <div class="cf-border"></div>
+              <div class="cf-cup">🫖</div>
+              <div class="cf-label">自我懷疑型</div>
+            </div>
+          </div>
+        </div>
+        <span class="card-tag">選項 C</span>
+      </div>
+
+    </div>
+  </div><!-- /cards-section -->
+
+  <!-- ── Answer panels ── -->
+  <div class="answer-area">
+
+    <!-- A -->
+    <div class="answer-panel" id="panelA">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 A 解析</div>
+        <div class="panel-sec">他的狀態</div>
+        <div class="panel-body">
+          他對你其實是有好感的，而且這份感覺並不是一時衝動，而是在相處過程中慢慢累積起來的。你給他的印象溫暖、舒服，也讓他覺得很有吸引力，只是他內心始終缺少跨出第一步的勇氣。<br><br>
+          越是在意你，反而越害怕被拒絕或破壞現有關係，因此選擇繼續觀察而不是主動靠近。與其說他沒有行動力，不如說他還沒有足夠的安全感去確認這段關係。
+        </div>
+        <div class="panel-sec">✨ 推薦商品</div>
+        <div class="product-box">
+          <div><span class="product-name">初心復合款</span></div>
+          <div class="product-desc">幫助提升情感流動與關係推進能量，適合彼此有好感卻遲遲無法更進一步的狀況。</div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="reset()">↩ 重新選牌</span>
+    </div>
+
+    <!-- B -->
+    <div class="answer-panel" id="panelB">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 B 解析</div>
+        <div class="panel-sec">他的狀態</div>
+        <div class="panel-body">
+          他的感覺其實比你想像得更明確，只是目前的他正處在人生某個轉變階段。無論是感情、工作還是生活狀態，都有些事情正在結束與重整，讓他暫時把重心放在自己身上。<br><br>
+          不是不想靠近你，而是希望等自己準備好之後再採取行動。這組牌顯示他未來是有機會主動的，只是現在仍在調整方向與步伐，需要一點時間完成內在的蛻變。
+        </div>
+        <div class="panel-sec">✨ 推薦商品</div>
+        <div class="product-box">
+          <div><span class="product-name">初心復合款</span><span style="font-size:12px;color:#88b8d8;"> ＋ </span><span class="product-name">澄光淨化款</span></div>
+          <div class="product-desc">協助清理過去情緒包袱，同時增強感情連結與關係流動。</div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="reset()">↩ 重新選牌</span>
+    </div>
+
+    <!-- C -->
+    <div class="answer-panel" id="panelC">
+      <div class="panel-card">
+        <div class="panel-badge">✦ 選項 C 解析</div>
+        <div class="panel-sec">他的狀態</div>
+        <div class="panel-body">
+          他最大的問題其實不是對你沒有感覺，而是對自己沒有信心。最近的他可能正面臨現實壓力、工作煩惱或對未來的不確定感，因此很難把心力放在感情上。<br><br>
+          即使心裡在意，也會擔心自己不夠好、害怕失敗或被拒絕，所以習慣把情緒藏起來，一個人默默消化。表面看起來冷淡，但其實內心有許多糾結與顧慮，讓他一直停留在想靠近卻又退縮的狀態。
+        </div>
+        <div class="panel-sec">✨ 推薦商品</div>
+        <div class="product-box">
+          <div><span class="product-name">澄光淨化款</span></div>
+          <div class="product-desc">幫助釋放負面情緒與內耗能量，讓關係中的阻塞感逐漸流動，也協助自己不被對方狀態過度影響。</div>
+        </div>
+      </div>
+      <span class="reset-link" onclick="reset()">↩ 重新選牌</span>
+    </div>
+
+  </div><!-- /answer-area -->
+
+  <!-- ── CTA ── -->
+  <div class="cta-section">
+    <div class="cta-card">
+      <p class="cta-title">想進一步了解更多？</p>
+      <div class="cta-list">
+        ✨ 他目前對你的真實想法<br>
+        ✨ 你們目前卡住的原因<br>
+        ✨ 未來感情走向發展
+      </div>
+      <a class="btn-main" href="https://lin.ee/WD1fGBt" target="_blank">
+        🔮 預約個人塔羅占卜
+      </a>
+      <a class="btn-sub" href="https://shopee.tw/nini10123?categoryId=100643&entryPoint=ShopByPDP&itemId=25944821904" target="_blank">
+        🛍 魔法商品傳送門
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">✦ Mita_tarot_ ｜米塔塔羅 ✦</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// ── Bubbles ──
+(function(){
+  const c = document.getElementById('bbg');
+  const list = [
+    {w:60,l:6, d:0,   dur:16, pink:true},
+    {w:32,l:22,d:2.5, dur:11},
+    {w:76,l:50,d:1.2, dur:19, pink:true},
+    {w:24,l:70,d:5,   dur:10},
+    {w:48,l:84,d:3,   dur:15},
+    {w:20,l:38,d:7,   dur:9},
+    {w:55,l:60,d:4.5, dur:18, pink:true},
+    {w:18,l:78,d:9,   dur:12},
+    {w:40,l:12,d:6,   dur:17},
+    {w:28,l:92,d:10,  dur:13},
+    {w:14,l:44,d:8,   dur:8},
+  ];
+  list.forEach(b=>{
+    const el = document.createElement('div');
+    el.className = 'bbl';
+    const blue = `radial-gradient(circle at 32% 30%, rgba(255,255,255,0.65), rgba(160,210,255,0.18))`;
+    const pink = `radial-gradient(circle at 32% 30%, rgba(255,255,255,0.65), rgba(255,185,215,0.18))`;
+    el.style.cssText = `
+      width:${b.w}px;height:${b.w}px;left:${b.l}%;
+      background:${b.pink?pink:blue};
+      border:1px solid ${b.pink?'rgba(255,185,215,0.35)':'rgba(160,210,255,0.35)'};
+      animation-delay:${b.d}s;animation-duration:${b.dur}s;
+    `;
+    c.appendChild(el);
+  });
+})();
+
+// ── Card logic ──
+let cur = null;
+
+function pick(id){
+  if(cur === id) return;
+  ['A','B','C'].forEach(x=>{
+    document.getElementById('card'+x).classList.remove('flipped');
+    document.getElementById('panel'+x).classList.remove('visible');
+  });
+  cur = id;
+  document.getElementById('card'+id).classList.add('flipped');
+  setTimeout(()=>{
+    const p = document.getElementById('panel'+id);
+    p.classList.add('visible');
+    p.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 420);
+}
+
+function reset(){
+  ['A','B','C'].forEach(x=>{
+    document.getElementById('card'+x).classList.remove('flipped');
+    document.getElementById('panel'+x).classList.remove('visible');
+  });
+  cur = null;
+  document.querySelector('.cards-section').scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
